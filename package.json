@@ -1,0 +1,37 @@
+{
+  "name": "node-EZSP",
+  "version": "1.0.0",
+  "description": "EZSP library for Node.js",
+  "main": "build/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/no2chem/node-EZSP.git"
+  },
+  "keywords": [
+    "EZSP",
+    "zigbee",
+    "silabs"
+  ],
+  "author": "Michael Wei <mwei@cs.ucsd.edu>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/no2chem/node-EZSP/issues"
+  },
+  "homepage": "https://github.com/no2chem/node-EZSP",
+  "devDependencies": {
+    "del": "^0.1.3",
+    "gulp": "^3.8.10",
+    "gulp-sourcemaps": "^1.2.8",
+    "gulp-tsd": "0.0.3",
+    "gulp-typescript": "^2.3.0"
+  },
+  "dependencies": {
+    "bluebird": "^2.3.11",
+    "crc": "^3.2.1",
+    "data-structures": "^1.4.2",
+    "serialport": "^1.4.6"
+  }
+}
