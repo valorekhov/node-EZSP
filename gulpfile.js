@@ -3,7 +3,7 @@ const ts = require('gulp-typescript');
 const sourcemaps = require('gulp-sourcemaps');
 const del = require('del');
 
-var tsProject = ts.createProject('tsconfig.json');
+var tsProject = ts.createProject('./tsconfig.json');
 
 //uncomment to turn on browserifyshim diags
 //process.env.BROWSERIFYSHIM_DIAGNOSTICS=1;
@@ -11,7 +11,7 @@ var tsProject = ts.createProject('tsconfig.json');
 gulp.task('ts-compile', function () {
     var tsResult = gulp.src(['src/*.ts', 'typings/**/*.ts'])
                        .pipe(sourcemaps.init())
-                       .pipe(ts(tsProject));
+                       .pipe(tsProject());
     return tsResult.js.pipe(gulp.dest('build'));
 })
 

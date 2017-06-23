@@ -6,9 +6,16 @@
         "removeComments": true,
         "preserveConstEnums": true,
         "sourceMap": true,
-        "strictNullChecks": true
+        "strictNullChecks": true,
+        "noImplicitThis": true,
+        "noUnusedLocals": true,
+        "lib": [
+            "es6",
+            "esnext"
+        ]
     },
-    "files": [
-        "src/index.ts"
+    "filesGlob": [
+        "src/**/*.ts",
+        "!node_modules"
     ]
 }
