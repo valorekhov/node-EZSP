@@ -22,10 +22,9 @@ export enum EZSPSpecialByte {
 }
 
 export class EZSPControl {
-    buffer : Buffer;
+    buffer: Buffer;
 
-    get frameType () : EZSPFrameType
-    {
+    get frameType(): EZSPFrameType {
         var val = this.buffer.readUInt8(0);
         if (val === 0xC2) { return EZSPFrameType.ERROR; }
         else if (val === 0xC1) { return EZSPFrameType.RSTACK; }
@@ -36,242 +35,199 @@ export class EZSPControl {
         throw "Unknown frame type!!!";
     }
 
-    set frameType (val : EZSPFrameType)
-    {
+    set frameType(val: EZSPFrameType) {
         var prev;
-        switch (val)
-        {
+        switch (val) {
             case EZSPFrameType.ERROR:
-                this.buffer.writeUInt8(0xC2,0);
+                this.buffer.writeUInt8(0xC2, 0);
                 break;
             case EZSPFrameType.RSTACK:
-                this.buffer.writeUInt8(0xC1,0);
+                this.buffer.writeUInt8(0xC1, 0);
                 break;
             case EZSPFrameType.RST:
-                this.buffer.writeUInt8(0xC0,0);
+                this.buffer.writeUInt8(0xC0, 0);
                 break;
             case EZSPFrameType.ACK:
                 prev = this.buffer.readUInt8(0);
                 prev &= ~0xE0;
-                this.buffer.writeUInt8((prev | 0x80) >>> 0,0);
+                this.buffer.writeUInt8((prev | 0x80) >>> 0, 0);
                 break;
             case EZSPFrameType.NAK:
                 prev = this.buffer.readUInt8(0);
                 prev &= ~0xE0;
-                this.buffer.writeUInt8((prev | 0xA0) >>> 0,0);
+                this.buffer.writeUInt8((prev | 0xA0) >>> 0, 0);
                 break;
             case EZSPFrameType.DATA:
                 prev = this.buffer.readUInt8(0);
                 prev &= ~0x80;
-                this.buffer.writeUInt8(prev,0);
+                this.buffer.writeUInt8(prev, 0);
                 break;
         }
     }
 
 
-    get frameNumber () : number
-    {
+    get frameNumber(): number {
         var frmNum = this.buffer.readUInt8(0) & 0x70;
         return frmNum >>> 4;
     }
 
-    set frameNumber(val: number)
-    {
+    set frameNumber(val: number) {
         var prev = this.buffer.readUInt8(0);
         prev &= ~0x70;
-        this.buffer.writeUInt8(prev | (val << 4),0);
+        this.buffer.writeUInt8(prev | (val << 4), 0);
     }
 
-    get retransmitted() : boolean
-    {
+    get retransmitted(): boolean {
         return (this.buffer.readUInt8(0) & 0x8) > 0;
     }
 
-    set retransmitted(val: boolean)
-    {
+    set retransmitted(val: boolean) {
         var prev = this.buffer.readUInt8(0);
-        if (val) { prev |=0x8 }
-        else {prev &= ~0x8;}
-        this.buffer.writeUInt8(prev,0);
+        if (val) { prev |= 0x8 }
+        else { prev &= ~0x8; }
+        this.buffer.writeUInt8(prev, 0);
     }
 
-    get inhibitCallback() : boolean
-    {
+    get inhibitCallback(): boolean {
         return (this.buffer.readUInt8(0) & 0x8) > 0;
     }
 
-    set inhibitCallback(val: boolean)
-    {
+    set inhibitCallback(val: boolean) {
         var prev = this.buffer.readUInt8(0);
-        if (val) { prev |=0x8 }
-        else {prev &= ~0x8;}
-        this.buffer.writeUInt8(prev,0);
+        if (val) { prev |= 0x8 }
+        else { prev &= ~0x8; }
+        this.buffer.writeUInt8(prev, 0);
     }
 
-    get ackNumber () : number
-    {
+    get ackNumber(): number {
         var frmNum = this.buffer.readUInt8(0) & 0x7;
         return frmNum;
     }
 
-    set ackNumber(val: number)
-    {
+    set ackNumber(val: number) {
         var prev = this.buffer.readUInt8(0);
         prev &= ~0x7;
-        this.buffer.writeUInt8(prev | (val),0);
+        this.buffer.writeUInt8(prev | (val), 0);
     }
 
-    constructor (buffer: Buffer)
-    {
+    constructor(buffer: Buffer) {
         this.buffer = buffer;
     }
 }
 
 export class EZSPMessage {
 
-    buffer : Buffer;
-    _length : number;
-    prepared : boolean;
+    buffer: Buffer;
+    _length: number;
+    prepared: boolean;
 
-    get control() : EZSPControl
-    {
+    get control(): EZSPControl {
         return new EZSPControl(this.buffer);
     }
 
-    get length() : number
-    {
-        if (this.prepared)
-        {
+    get length(): number {
+        if (this.prepared) {
             return this.buffer.length;
         }
-        switch (this.control.frameType)
-        {
+        switch (this.control.frameType) {
             case EZSPFrameType.RST:
                 return 4;
-                break;
             case EZSPFrameType.RSTACK:
                 return 6;
-                break;
             case EZSPFrameType.ERROR:
                 return 6;
-                break;
             case EZSPFrameType.DATA:
                 return this._length + 4;
-                break;
             case EZSPFrameType.ACK:
                 return 4;
-                break;
             case EZSPFrameType.NAK:
                 return 4;
-                break;
         }
     }
 
-    set datalength(val:number)
-    {
-        if (this.prepared)
-        {
+    set datalength(val: number) {
+        if (this.prepared) {
             throw "Can't set length on a prepared frame!";
         }
-        if (this.control.frameType == EZSPFrameType.DATA)
-        {
+        if (this.control.frameType == EZSPFrameType.DATA) {
             this._length = val;
         }
-        else
-        {
+        else {
             throw "Can't set length on non-data frame!";
         }
     }
 
-    get CRC() : number
-    {
+    get CRC(): number {
         return this.buffer.readUInt16BE(this.length - 3);
     }
 
-    set CRC(val:number)
-    {
+    set CRC(val: number) {
         this.buffer.writeUInt16BE(val, this.length - 3);
     }
 
-    get flag() : number
-    {
+    get flag(): number {
         return this.buffer.readUInt8(this.length - 1);
     }
 
-    set flag(val: number)
-    {
+    set flag(val: number) {
         this.buffer.writeUInt8(val, this.length - 1);
     }
 
-    get data() : Buffer
-    {
-        return this.buffer.slice(1, this._length+1);
+    get data(): Buffer {
+        return this.buffer.slice(1, this._length + 1);
     }
 
-    get version() : number
-    {
+    get version(): number {
         return this.buffer.readUInt8(1);
     }
 
-    set version(val:number)
-    {
+    set version(val: number) {
         this.buffer.writeUInt8(val, 1);
     }
 
-    get code() : number
-    {
+    get code(): number {
         return this.buffer.readUInt8(2);
     }
 
-    set code(val: number)
-    {
+    set code(val: number) {
         this.buffer.writeUInt8(val, 2);
     }
 
-    calculateCRC = () :number =>
-    {
-        return crc.crc16ccitt(this.buffer.slice(0,this.length-3));
+    calculateCRC = (): number => {
+        return crc.crc16ccitt(this.buffer.slice(0, this.length - 3));
     }
 
-    isSpecialCharacter(character:number) : boolean
-    {
+    isSpecialCharacter(character: number): boolean {
         return EZSPSpecialByte[character] !== undefined;
     }
 
     //Stuff bytes. We can attempt to do this in place, as long as
     //the buffer has enough bytes...
-    stuffandflag = () : number  => {
+    stuffandflag = (): number => {
         var i = 0;
         var seen = 0;
         var length = this.length; //need to preserve this because stuffing can change it...
         var stuffQueue = new Queue();
-        do
-        {
-            if (seen < length -1)
-            {
+        do {
+            if (seen < length - 1) {
                 var thischar = this.buffer.readUInt8(i);
-                if (this.isSpecialCharacter(thischar))
-                {
+                if (this.isSpecialCharacter(thischar)) {
                     stuffQueue.enqueue(EZSPSpecialByte.ESCAPE);
                     stuffQueue.enqueue(thischar ^ 0x20);
                 }
-                else
-                {
-                    if (stuffQueue.size > 0)
-                    {
+                else {
+                    if (stuffQueue.size > 0) {
                         stuffQueue.enqueue(thischar);
                     }
                 }
                 seen++;
             }
-            else if (seen === length -1)
-            {
+            else if (seen === length - 1) {
                 stuffQueue.enqueue(EZSPSpecialByte.FLAG);
                 seen++;
             }
 
-            if (stuffQueue.size > 0)
-            {
+            if (stuffQueue.size > 0) {
                 this.buffer.writeUInt8(stuffQueue.dequeue(), i);
             }
             i++;
@@ -286,22 +242,18 @@ export class EZSPMessage {
     unstuff = () => {
         var i = 0;
         var writePointer = 0;
-        do
-        {
+        do {
             var thischar = this.buffer.readUInt8(i);
-            if (thischar === EZSPSpecialByte.ESCAPE)
-            {
-                this.buffer.writeUInt8(this.buffer.readUInt8(i+1) ^ 0x20, writePointer);
-                i+= 2; //skip over escaped char
+            if (thischar === EZSPSpecialByte.ESCAPE) {
+                this.buffer.writeUInt8(this.buffer.readUInt8(i + 1) ^ 0x20, writePointer);
+                i += 2; //skip over escaped char
             }
-            else
-            {
-                i+=1;
+            else {
+                i += 1;
             }
             writePointer++;
-            } while (i < this.buffer.length);
-        if (this.control.frameType === EZSPFrameType.DATA)
-        {
+        } while (i < this.buffer.length);
+        if (this.control.frameType === EZSPFrameType.DATA) {
             this._length = writePointer - 4;
         }
         this.prepared = false;
@@ -311,13 +263,12 @@ export class EZSPMessage {
     //Randomizes the data field according to the LFSR...
     randomize = () => {
         var i;
-        var rand :number = 0x42;
-        for (i = 1; i < this.length -3; i++)
-        {
+        var rand: number = 0x42;
+        for (i = 1; i < this.length - 3; i++) {
             var b = this.buffer.readUInt8(i);
             this.buffer.writeUInt8(b ^ rand, i);
-            if ((rand & 1) ==0) { rand = (rand >> 1);}
-            else {rand = (rand >> 1) ^ 0xB8}
+            if ((rand & 1) == 0) { rand = (rand >> 1); }
+            else { rand = (rand >> 1) ^ 0xB8 }
         }
     }
 
@@ -325,8 +276,7 @@ export class EZSPMessage {
     //applying bit stuffing, randomizing the data and
     //setting the flag.
     prepare = () => {
-        if (this.control.frameType === EZSPFrameType.DATA)
-        {
+        if (this.control.frameType === EZSPFrameType.DATA) {
             this.randomize();
         }
         this.CRC = this.calculateCRC();
@@ -338,37 +288,33 @@ export class EZSPMessage {
     //derandomizing the data field, and checking the CRC.
     unprepare = () => {
         this.unstuff();
-        if (this.CRC !== this.calculateCRC())
-        {
-            throw "CRC failure during unprepare! (expected " + this.calculateCRC().toString(16) + ", got " +  this.CRC.toString(16) + ")";
+        if (this.CRC !== this.calculateCRC()) {
+            throw "CRC failure during unprepare! (expected " + this.calculateCRC().toString(16) + ", got " + this.CRC.toString(16) + ")";
         }
 
-        if (this.control.frameType === EZSPFrameType.DATA)
-        {
+        if (this.control.frameType === EZSPFrameType.DATA) {
             this.randomize();
         }
         return this.buffer;
     }
 
-    toString() : string {
-        if (this.prepared)
-        {
+    toString(): string {
+        if (this.prepared) {
             return "[Prepared Message]";
         }
         var outStr = "[";
         outStr += EZSPFrameType[this.control.frameType] + "]";
 
-        switch (this.control.frameType)
-        {
+        switch (this.control.frameType) {
             case EZSPFrameType.RST:
                 break;
             case EZSPFrameType.RSTACK:
-                outStr += " (V=0x"+this.version.toString(16) + ", C=0x"+this.code.toString(16) + ");"
+                outStr += " (V=0x" + this.version.toString(16) + ", C=0x" + this.code.toString(16) + ");"
                 break;
             case EZSPFrameType.ERROR:
-                outStr += " (V=0x"+this.version.toString(16) + ", C=0x"+this.code.toString(16) + ");"
+                outStr += " (V=0x" + this.version.toString(16) + ", C=0x" + this.code.toString(16) + ");"
                 break;
-                case EZSPFrameType.DATA:
+            case EZSPFrameType.DATA:
                 outStr += " (F=" + this.control.frameNumber + ", A=" + this.control.ackNumber + ", R=" + this.control.retransmitted + ")";
                 outStr += " " + this.data.toJSON();
                 break;
@@ -383,21 +329,16 @@ export class EZSPMessage {
         return outStr;
     }
 
-    constructor (buffer? : Buffer)
-    {
-        if (buffer === undefined)
-        {
+    constructor(buffer?: Buffer) {
+        if (buffer === undefined) {
             this.prepared = false;
             this.buffer = new Buffer(256); //max size we'll need if every byte is stuffed...
         }
-        else
-        {
-            if (!(buffer instanceof Buffer))
-            {
+        else {
+            if (!(buffer instanceof Buffer)) {
                 this.buffer = new Buffer(<any>buffer);
             }
-            else
-            {
+            else {
                 this.buffer = buffer;
             }
             this.prepared = true;
@@ -405,35 +346,32 @@ export class EZSPMessage {
     }
 }
 
-export class EZSPChannel extends events.EventEmitter
-{
-    currentData;
-    frameCounter;
-    ackCounter;
-    retransmitQueue;
-    reject;
-    writeCallback;
+export class EZSPChannel extends events.EventEmitter {
+    currentData: any;
+    frameCounter: number;
+    ackCounter: number;
+    retransmitQueue: any;
+    reject: boolean;
+    writeCallback: Function;
 
-    reset = () =>
-    {
-        var deferred = Promise.pending();
-        var rstMessage : EZSPMessage = new EZSPMessage();
-        rstMessage.control.frameType = EZSPFrameType.RST;
-        var timeout = setTimeout(function() {
-                deferred.reject("Reset timed out!");
-        }, 3000);
-        this.once('reset', function (version,code) {
-            clearTimeout(timeout);
-            deferred.fulfill(version, code);
+    reset = () => {
+        return new Promise((resolve, reject) => {
+
+            var rstMessage: EZSPMessage = new EZSPMessage();
+            rstMessage.control.frameType = EZSPFrameType.RST;
+            var timeout = setTimeout(function () {
+                reject("Reset timed out!");
+            }, 3000);
+            this.once('reset', function (version, code) {
+                clearTimeout(timeout);
+                resolve([version, code]);
+            })
+            this.write(rstMessage);
         })
-        this.write(rstMessage);
-        return deferred;
     }
 
-    write = (message: EZSPMessage) =>
-    {
-        if (message.control.frameType === EZSPFrameType.DATA)
-        {
+    write = (message: EZSPMessage) => {
+        if (message.control.frameType === EZSPFrameType.DATA) {
             message.control.frameNumber = this.frameCounter;
             this.frameCounter = this.frameCounter % 8;
             this.frameCounter++;
@@ -446,40 +384,31 @@ export class EZSPChannel extends events.EventEmitter
         this.retransmitQueue.enqueue(message);
     }
 
-    isSpecialCharacter(character:number) : boolean
-    {
+    isSpecialCharacter(character: number): boolean {
         return EZSPSpecialByte[character] !== undefined;
     }
 
     //call this function whenever new data is avaliable
-    read = (buffer: Buffer) =>
-    {
+    read = (buffer: Buffer) => {
         var i;
-        for (i=0; i< buffer.length; i++)
-        {
+        for (i = 0; i < buffer.length; i++) {
             var data = buffer[i];
-            if (!this.isSpecialCharacter(data))
-            {
+            if (!this.isSpecialCharacter(data)) {
                 this.currentData.enqueue(data);
             }
-            if (data === EZSPSpecialByte.FLAG)
-            {
+            if (data === EZSPSpecialByte.FLAG) {
                 this.currentData.enqueue(data);
                 var buf = new Buffer(this.currentData._content);
                 this.currentData = new Queue();
                 var message = new EZSPMessage(buf);
-                try
-                {
+                try {
                     message.unprepare();
-                    if (this.reject)
-                    {
+                    if (this.reject) {
                         //reject mode.
                     }
-                    else if (message.control.frameType === EZSPFrameType.DATA)
-                    {
-                    //is it the next message we were expecting?
-                        if (message.control.frameNumber === this.ackCounter)
-                        {
+                    else if (message.control.frameType === EZSPFrameType.DATA) {
+                        //is it the next message we were expecting?
+                        if (message.control.frameNumber === this.ackCounter) {
                             this.ackCounter = ((this.ackCounter) + 1) % 8;
                             var ackMessage = new EZSPMessage();
                             console.log(message.control.frameNumber);
@@ -488,24 +417,20 @@ export class EZSPChannel extends events.EventEmitter
                             ackMessage.control.inhibitCallback = false;
                             this.write(ackMessage);
                             //does it contain a piggybacked ACK?
-                            if (message.control.ackNumber !== 0)
-                            {
+                            if (message.control.ackNumber !== 0) {
                                 //update the acked frame number
-                                 var frames = message.control.ackNumber - this.retransmitQueue.size;
+                                var frames = message.control.ackNumber - this.retransmitQueue.size;
                                 if (frames < 0) { frames = frames + 8; };
                                 //free a frame.
-                                for (var j = 0; j < frames ; j++)
-                                {
-                                    if (this.retransmitQueue.size > 0)
-                                    {
+                                for (var j = 0; j < frames; j++) {
+                                    if (this.retransmitQueue.size > 0) {
                                         this.retransmitQueue.dequeue();
                                     }
                                 }
                             }
                             this.emit('data', message);
                         }
-                        else
-                        {
+                        else {
                             //NAK this message, since we are out of sequence.
                             var nakMessage = new EZSPMessage();
                             nakMessage.control.frameType = EZSPFrameType.NAK;
@@ -514,32 +439,26 @@ export class EZSPChannel extends events.EventEmitter
                             this.write(nakMessage);
                         }
                     }
-                    else if (message.control.frameType === EZSPFrameType.RSTACK)
-                    {
+                    else if (message.control.frameType === EZSPFrameType.RSTACK) {
                         this.emit('reset', message.version, message.code);
                     }
-                    else if (message.control.frameType === EZSPFrameType.ACK)
-                    {
+                    else if (message.control.frameType === EZSPFrameType.ACK) {
                         var frames = message.control.ackNumber - this.frameCounter;
                         if (frames < 0) { frames = frames + 8; };
                         //free a frame.
-                        for (var j = 0; j < frames ; j++)
-                        {
-                            if (this.retransmitQueue.size > 0)
-                            {
+                        for (var j = 0; j < frames; j++) {
+                            if (this.retransmitQueue.size > 0) {
                                 this.retransmitQueue.dequeue();
                             }
                         }
                     }
-                    else if (message.control.frameType === EZSPFrameType.NAK)
-                    {
+                    else if (message.control.frameType === EZSPFrameType.NAK) {
                         //begin retransmit phase.
                         this.emit('nak', "NAK received, entering retransmit mode.")
                         this.reject = true;
                     }
                 }
-                catch (e)
-                {
+                catch (e) {
                     //TODO: error handling here
                     console.log("Channel error: " + e + "(message buffer= " + message.buffer.toJSON() + ")");
                 }
@@ -547,15 +466,14 @@ export class EZSPChannel extends events.EventEmitter
         }
     }
 
-    constructor ()
-    {
+    constructor() {
         super();
         this.currentData = new Queue();
         this.retransmitQueue = new Queue();
         this.frameCounter = 0;
         this.ackCounter = 0;
         this.reject = false;
-        this.writeCallback = function(d) {
+        this.writeCallback = (d: Buffer) => {
             console.log("Warning: writeCallback not set, please set write callback!");
             var msg = new EZSPMessage(d);
             msg.unprepare();

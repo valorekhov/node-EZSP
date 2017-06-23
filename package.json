@@ -33,6 +33,7 @@
   "dependencies": {
     "crc": "^3.2.1",
     "data-structures": "^1.4.2",
+    "iterall": "^1.1.1",
     "serialport": "^4.0.7"
   }
 }
