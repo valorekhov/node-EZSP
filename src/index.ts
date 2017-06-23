@@ -22,7 +22,9 @@ export enum EZSPSpecialByte {
 }
 
 export class EZSPControl {
-    buffer: Buffer;
+
+    constructor(private buffer: Buffer) {
+    }
 
     get frameType(): EZSPFrameType {
         var val = this.buffer.readUInt8(0);
@@ -109,10 +111,6 @@ export class EZSPControl {
         prev &= ~0x7;
         this.buffer.writeUInt8(prev | (val), 0);
     }
-
-    constructor(buffer: Buffer) {
-        this.buffer = buffer;
-    }
 }
 
 export class EZSPMessage {
@@ -120,6 +118,22 @@ export class EZSPMessage {
     buffer: Buffer;
     _length: number;
     prepared: boolean;
+
+    constructor(buffer?: Buffer) {
+        if (buffer === undefined) {
+            this.prepared = false;
+            this.buffer = new Buffer(256); //max size we'll need if every byte is stuffed...
+        }
+        else {
+            if (!(buffer instanceof Buffer)) {
+                this.buffer = new Buffer(<any>buffer);
+            }
+            else {
+                this.buffer = buffer;
+            }
+            this.prepared = true;
+        }
+    }
 
     get control(): EZSPControl {
         return new EZSPControl(this.buffer);
@@ -328,22 +342,6 @@ export class EZSPMessage {
 
         return outStr;
     }
-
-    constructor(buffer?: Buffer) {
-        if (buffer === undefined) {
-            this.prepared = false;
-            this.buffer = new Buffer(256); //max size we'll need if every byte is stuffed...
-        }
-        else {
-            if (!(buffer instanceof Buffer)) {
-                this.buffer = new Buffer(<any>buffer);
-            }
-            else {
-                this.buffer = buffer;
-            }
-            this.prepared = true;
-        }
-    }
 }
 
 export class EZSPChannel extends events.EventEmitter {
@@ -353,6 +351,21 @@ export class EZSPChannel extends events.EventEmitter {
     retransmitQueue: any;
     reject: boolean;
     writeCallback: Function;
+
+     constructor() {
+        super();
+        this.currentData = new Queue();
+        this.retransmitQueue = new Queue();
+        this.frameCounter = 0;
+        this.ackCounter = 0;
+        this.reject = false;
+        this.writeCallback = (d: Buffer) => {
+            console.log("Warning: writeCallback not set, please set write callback!");
+            var msg = new EZSPMessage(d);
+            msg.unprepare();
+            console.log("> " + msg.toString());
+        };
+    }
 
     reset = () => {
         return new Promise((resolve, reject) => {
@@ -464,20 +477,5 @@ export class EZSPChannel extends events.EventEmitter {
                 }
             }
         }
-    }
-
-    constructor() {
-        super();
-        this.currentData = new Queue();
-        this.retransmitQueue = new Queue();
-        this.frameCounter = 0;
-        this.ackCounter = 0;
-        this.reject = false;
-        this.writeCallback = (d: Buffer) => {
-            console.log("Warning: writeCallback not set, please set write callback!");
-            var msg = new EZSPMessage(d);
-            msg.unprepare();
-            console.log("> " + msg.toString());
-        };
     }
 }
