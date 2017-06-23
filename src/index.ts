@@ -1,10 +1,7 @@
-/// <reference path="../typings/tsd.d.ts"/>
-
-var SerialPort = require('serialport').SerialPort;
-var Promise = require('bluebird');
-var crc = require('crc');
-var Queue = require('data-structures').Queue;
-import events = require('events');
+import * as SerialPort from 'serialport';
+import * as crc from 'crc';
+const Queue = require('data-structures').Queue;
+import * as events from 'events';
 
 export enum EZSPFrameType {
     DATA,
