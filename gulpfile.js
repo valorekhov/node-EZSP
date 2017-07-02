@@ -9,10 +9,12 @@ var tsProject = ts.createProject('./tsconfig.json');
 //process.env.BROWSERIFYSHIM_DIAGNOSTICS=1;
 
 gulp.task('ts-compile', function () {
-    var tsResult = gulp.src(['src/*.ts', 'typings/**/*.ts'])
+    var tsResult = gulp.src(['src/**/*.ts'])
                        .pipe(sourcemaps.init())
                        .pipe(tsProject());
-    return tsResult.js.pipe(gulp.dest('build'));
+    return tsResult
+            .pipe(sourcemaps.write())
+            .pipe(gulp.dest('build'));
 })
 
 gulp.task('clean', function(cb) {

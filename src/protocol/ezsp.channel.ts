@@ -1,4 +1,4 @@
-import {EventEmitter} from 'events';
+import { EventEmitter } from 'events';
 import { EZSPMessage } from './ezsp.message';
 import { EZSPFrameType, EZSPSpecialByte } from './index';
 const Queue = require('data-structures').Queue;
@@ -11,7 +11,7 @@ export class EZSPChannel extends EventEmitter {
     reject: boolean;
     writeCallback: Function;
 
-     constructor() {
+    constructor() {
         super();
         this.currentData = new Queue();
         this.retransmitQueue = new Queue();
@@ -62,9 +62,8 @@ export class EZSPChannel extends EventEmitter {
 
     //call this function whenever new data is avaliable
     read = (buffer: Buffer) => {
-        var i;
-        for (i = 0; i < buffer.length; i++) {
-            var data = buffer[i];
+        for (let i = 0; i < buffer.length; i++) {
+            let data = buffer[i];
             if (!this.isSpecialCharacter(data)) {
                 this.currentData.enqueue(data);
             }

@@ -1,5 +1,5 @@
-import { EZSPFrameType, EZSPSpecialByte } from './index';
-import { EZSPControl } from './ezsp.control';
+import {  EZSPSpecialByte } from './index';
+import { EZSPFrame, EZSPFrameType  } from './ezsp.frame';
 import {crc16ccitt} from 'crc';
 const Queue = require('data-structures').Queue;
 
@@ -25,8 +25,8 @@ export class EZSPMessage {
         }
     }
 
-    get control(): EZSPControl {
-        return new EZSPControl(this.buffer);
+    get control(): EZSPFrame {
+        return new EZSPFrame(this.buffer);
     }
 
     get length(): number {

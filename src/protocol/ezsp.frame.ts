@@ -1,6 +1,13 @@
-import { EZSPFrameType } from './index';
+export enum EZSPFrameType {
+    DATA,
+    ACK,
+    NAK,
+    RST,
+    RSTACK,
+    ERROR
+}
 
-export class EZSPControl {
+export class EZSPFrame {
 
     constructor(private buffer: Buffer) {
     }

@@ -1,15 +1,6 @@
 import { EZSPChannel } from './ezsp.channel';
 import { EZSPMessage } from './ezsp.message';
-import { EZSPControl } from './ezsp.control';
-
-enum EZSPFrameType {
-    DATA,
-    ACK,
-    NAK,
-    RST,
-    RSTACK,
-    ERROR
-}
+import { EZSPFrame, EZSPFrameType } from './ezsp.frame';
 
 enum EZSPSpecialByte {
     FLAG = 0x7E,
@@ -21,5 +12,5 @@ enum EZSPSpecialByte {
 }
 
 
-export {EZSPFrameType, EZSPSpecialByte, EZSPChannel, EZSPMessage, EZSPControl }
+export {EZSPFrameType, EZSPSpecialByte, EZSPChannel, EZSPMessage, EZSPFrame }
 
