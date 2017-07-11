@@ -8,33 +8,35 @@ export class EzspStruct {
         //    for field in self._fields:
         //        setattr(self, field[0], getattr(args[0], field[0]))
     }
-    serialize() {
+    static serialize(cls: any) {
         //    r = b''
         //for field in self._fields:
         //    r += getattr(self, field[0]).serialize()
         //return r
     }
 
-    static deserialize(cls : any, data : Buffer) {
-        //var r;
-        //r = cls[];
-        //for field_name, field_type in cls._fields:
-        //    v, data = field_type.deserialize[data]
-        //    setattr[r, field_name, v]
-        //return r, data
+    static deserialize(cls: any, data: Buffer) {
+        var r = new cls();
+        for (let [field_name, field_type] of cls._fields) {
+            let v;
+            [v, data] = field_type.deserialize(field_type, data)
+            r[field_name] = v;
+        }
+        return [r, data]
     }
-    toString() {
+
+    /*toString() {
         //r = '<%s ' % (self.__class__.__name__, )
         //r += ' '.join(
         //    ['%s=%s' % (f[0], getattr(self, f[0], None)) for f in self._fields]
         //)
         //r += '>'
         //return r
-    }
+    }*/
 }
 
 export class EmberNetworkParameters extends EzspStruct {
-    _fields = [
+    static _fields = [
         // The network's extended PAN identifier.
         ['extendedPanId', basic.fixed_list(8, basic.uint8_t)],
         // The network's PAN identifier.
@@ -63,7 +65,7 @@ export class EmberNetworkParameters extends EzspStruct {
 }
 export class EmberZigbeeNetwork extends EzspStruct {
     // The parameters of a ZigBee network.
-    _fields = [
+    static _fields = [
         // The 802.15.4 channel associated with the network.
         ['channel', basic.uint8_t],
         // The network's PAN identifier.
@@ -81,7 +83,7 @@ export class EmberZigbeeNetwork extends EzspStruct {
 
 export class EmberApsFrame extends EzspStruct {
     // ZigBee APS frame parameters.
-    _fields = [
+    static _fields = [
         // The application profile ID that describes the format of the message.
         ['profileId', basic.uint16_t],
         // The cluster ID for this message.
@@ -101,7 +103,7 @@ export class EmberApsFrame extends EzspStruct {
 
 export class EmberBindingTableEntry extends EzspStruct {
     // An entry in the binding table.
-    _fields = [
+    static _fields = [
         // The type of binding.
         ['type', named.EmberBindingType],
         // The endpoint on the local node.
@@ -127,7 +129,7 @@ export class EmberMulticastTableEntry extends EzspStruct {
     // A multicast table entry indicates that a particular endpoint is a member
     // of a particular multicast group.Only devices with an endpoint in a
     // multicast group will receive messages sent to that multicast group.
-    _fields = [
+    static _fields = [
         // The multicast group ID.
         ['multicastId', named.EmberMulticastId],
         // The endpoint that is a member, or 0 if this entry is not in use[the
@@ -140,7 +142,7 @@ export class EmberMulticastTableEntry extends EzspStruct {
 
 export class EmberKeyData extends EzspStruct {
     // A 128- bit key.
-    _fields = [
+    static _fields = [
         // The key data.
         ['contents', basic.fixed_list(16, basic.uint8_t)],
     ]
@@ -149,7 +151,7 @@ export class EmberKeyData extends EzspStruct {
 export class EmberCertificateData extends EzspStruct {
 
     // The implicit certificate used in CBKE.
-    _fields = [
+    static _fields = [
         // The certificate data.
         ['contents', basic.fixed_list(48, basic.uint8_t)],
     ]
@@ -158,7 +160,7 @@ export class EmberCertificateData extends EzspStruct {
 
 export class EmberPublicKeyData extends EzspStruct {
     // The public key data used in CBKE.
-    _fields = [
+    static _fields = [
         // The public key data.
         ['contents', basic.fixed_list(22, basic.uint8_t)],
     ]
@@ -166,7 +168,7 @@ export class EmberPublicKeyData extends EzspStruct {
 
 export class EmberPrivateKeyData extends EzspStruct {
     // The private key data used in CBKE.
-    _fields = [
+    static _fields = [
         // The private key data.
         ['contents', basic.fixed_list(21, basic.uint8_t)],
     ]
@@ -174,7 +176,7 @@ export class EmberPrivateKeyData extends EzspStruct {
 
 export class EmberSmacData extends EzspStruct {
     // The Shared Message Authentication Code data used in CBKE.
-    _fields = [
+    static _fields = [
         // The Shared Message Authentication Code data.
         ['contents', basic.fixed_list(16, basic.uint8_t)],
     ]
@@ -182,7 +184,7 @@ export class EmberSmacData extends EzspStruct {
 
 export class EmberSignatureData extends EzspStruct {
     // An ECDSA signature
-    _fields = [
+    static _fields = [
         // The signature data.
         ['contents', basic.fixed_list(42, basic.uint8_t)],
     ]
@@ -190,7 +192,7 @@ export class EmberSignatureData extends EzspStruct {
 
 export class EmberCertificate283k1Data extends EzspStruct {
     // The implicit certificate used in CBKE.
-    _fields = [
+    static _fields = [
         // The 283k1 certificate data.
         ['contents', basic.fixed_list(74, basic.uint8_t)],
     ]
@@ -198,7 +200,7 @@ export class EmberCertificate283k1Data extends EzspStruct {
 
 export class EmberPublicKey283k1Data extends EzspStruct {
     // The public key data used in CBKE.
-    _fields = [
+    static _fields = [
         // The 283k1 public key data.
         ['contents', basic.fixed_list(37, basic.uint8_t)],
     ]
@@ -206,7 +208,7 @@ export class EmberPublicKey283k1Data extends EzspStruct {
 
 export class EmberPrivateKey283k1Data extends EzspStruct {
     // The private key data used in CBKE.
-    _fields = [
+    static _fields = [
         // The 283k1 private key data.
         ['contents', basic.fixed_list(36, basic.uint8_t)],
     ]
@@ -214,7 +216,7 @@ export class EmberPrivateKey283k1Data extends EzspStruct {
 
 export class EmberSignature283k1Data extends EzspStruct {
     // An ECDSA signature
-    _fields = [
+    static _fields = [
         // The 283k1 signature data.
         ['contents', basic.fixed_list(72, basic.uint8_t)],
     ]
@@ -222,7 +224,7 @@ export class EmberSignature283k1Data extends EzspStruct {
 
 export class EmberMessageDigest extends EzspStruct {
     // The calculated digest of a message
-    _fields = [
+    static _fields = [
         // The calculated digest of a message.
         ['contents', basic.fixed_list(16, basic.uint8_t)],
     ]
@@ -230,7 +232,7 @@ export class EmberMessageDigest extends EzspStruct {
 
 export class EmberAesMmoHashContext extends EzspStruct {
     // The hash context for an ongoing hash operation.
-    _fields = [
+    static _fields = [
         // The result of ongoing the hash operation.
         ['result', basic.fixed_list(16, basic.uint8_t)],
         // The total length of the data that has been hashed so far.
@@ -241,7 +243,7 @@ export class EmberAesMmoHashContext extends EzspStruct {
 export class EmberNeighborTableEntry extends EzspStruct {
     // A neighbor table entry stores information about the reliability of RF
     // links to and from neighboring nodes.
-    _fields = [
+    static _fields = [
         // The neighbor's two byte network id
         ['shortId', basic.uint16_t],
         // An exponentially weighted moving average of the link quality values
@@ -267,7 +269,7 @@ export class EmberNeighborTableEntry extends EzspStruct {
 export class EmberRouteTableEntry extends EzspStruct {
     // A route table entry stores information about the next hop along the route
     // to the destination.
-    _fields = [
+    static _fields = [
         // The short id of the destination. A value of 0xFFFF indicates the
         // entry is unused.
         ['destination', basic.uint16_t],
@@ -292,7 +294,7 @@ export class EmberRouteTableEntry extends EzspStruct {
 export class EmberInitialSecurityState extends EzspStruct {
     // The security data used to set the configuration for the stack, or the
     // retrieved configuration currently in use.
-    _fields = [
+    static _fields = [
         // A bitmask indicating the security state used to indicate what the
         // security configuration will be when the device forms or joins the
         // network.
@@ -323,7 +325,7 @@ export class EmberInitialSecurityState extends EzspStruct {
 
 export class EmberCurrentSecurityState extends EzspStruct {
     // The security options and information currently used by the stack.
-    _fields = [
+    static _fields = [
         // A bitmask indicating the security options currently in use by a
         // device joined in the network.
         ['bitmask', named.EmberCurrentSecurityBitmask],
@@ -334,7 +336,7 @@ export class EmberCurrentSecurityState extends EzspStruct {
 
 export class EmberKeyStruct extends EzspStruct {
     // A structure containing a key and its associated data.
-    _fields = [
+    static _fields = [
         // A bitmask indicating the presence of data within the various fields
         // in the structure.
         ['bitmask', named.EmberKeyStructBitmask],
@@ -355,7 +357,7 @@ export class EmberKeyStruct extends EzspStruct {
 
 export class EmberNetworkInitStruct extends EzspStruct {
     // Network Initialization parameters.
-    _fields = [
+    static _fields = [
         // Configuration options for network init.
         ['bitmask', named.EmberNetworkInitBitmask],
     ]
@@ -363,7 +365,7 @@ export class EmberNetworkInitStruct extends EzspStruct {
 
 export class EmberZllSecurityAlgorithmData extends EzspStruct {
     // Data associated with the ZLL security algorithm.
-    _fields = [
+    static _fields = [
         // Transaction identifier.
         ['transactionId', basic.uint32_t],
         // Response identifier.
@@ -375,7 +377,7 @@ export class EmberZllSecurityAlgorithmData extends EzspStruct {
 
 export class EmberZllNetwork extends EzspStruct {
     // The parameters of a ZLL network.
-    _fields = [
+    static _fields = [
         // The parameters of a ZigBee network.
         ['zigbeeNetwork', EmberZigbeeNetwork],
         // Data associated with the ZLL security algorithm.
@@ -400,7 +402,7 @@ export class EmberZllNetwork extends EzspStruct {
 export class EmberZllInitialSecurityState extends EzspStruct {
     // Describes the initial security features and requirements that will be
     // used when forming or joining ZLL networks.
-    _fields = [
+    static _fields = [
         // Unused bitmask; reserved for future use.
         ['bitmask', basic.uint32_t],
         // The key encryption algorithm advertised by the application.
@@ -415,7 +417,7 @@ export class EmberZllInitialSecurityState extends EzspStruct {
 
 export class EmberZllDeviceInfoRecord extends EzspStruct {
     // Information about a specific ZLL Device.
-    _fields = [
+    static _fields = [
         // EUI64 associated with the device.
         ['ieeeAddress', named.EmberEUI64],
         // Endpoint id.
@@ -433,7 +435,7 @@ export class EmberZllDeviceInfoRecord extends EzspStruct {
 
 export class EmberZllAddressAssignment extends EzspStruct {
     // ZLL address assignment data.
-    _fields = [
+    static _fields = [
         // Relevant node id.
         ['nodeId', named.EmberNodeId],
         // Minimum free node id.
@@ -453,7 +455,7 @@ export class EmberZllAddressAssignment extends EzspStruct {
 
 export class EmberTokTypeStackZllData extends EzspStruct {
     // Public API for ZLL stack data token.
-    _fields = [
+    static _fields = [
         // Token bitmask.
         ['bitmask', basic.uint32_t],
         // Minimum free node id.
@@ -473,7 +475,7 @@ export class EmberTokTypeStackZllData extends EzspStruct {
 
 export class EmberTokTypeStackZllSecurity extends EzspStruct {
     // Public API for ZLL stack security token.
-    _fields = [
+    static _fields = [
         // Token bitmask.
         ['bitmask', basic.uint32_t],
         // Key index.
@@ -487,7 +489,7 @@ export class EmberTokTypeStackZllSecurity extends EzspStruct {
 
 export class EmberRf4ceVendorInfo extends EzspStruct {
     // The RF4CE vendor information block.
-    _fields = [
+    static _fields = [
         // The vendor identifier field shall contain the vendor identifier of
         // the node.
         ['vendorId', basic.uint16_t],
@@ -498,7 +500,7 @@ export class EmberRf4ceVendorInfo extends EzspStruct {
 
 export class EmberRf4ceApplicationInfo extends EzspStruct {
     // The RF4CE application information block.
-    _fields = [
+    static _fields = [
         // The application capabilities field shall contain information relating
         // to the capabilities of the application of the node.
         ['capabilities', named.EmberRf4ceApplicationCapabilities],
@@ -516,7 +518,7 @@ export class EmberRf4ceApplicationInfo extends EzspStruct {
 
 export class EmberRf4cePairingTableEntry extends EzspStruct {
     // The internal representation of an RF4CE pairing table entry.
-    _fields = [
+    static _fields = [
         // The link key to be used to secure this pairing link.
         ['securityLinkKey', EmberKeyData],
         // The IEEE address of the destination device.
@@ -548,7 +550,7 @@ export class EmberRf4cePairingTableEntry extends EzspStruct {
 
 export class EmberGpAddress extends EzspStruct {
     // A GP address structure.
-    _fields = [
+    static _fields = [
         // The GPD's EUI64.
         ['gpdIeeeAddress', named.EmberEUI64],
         // The GPD's source ID.
@@ -562,7 +564,7 @@ export class EmberGpAddress extends EzspStruct {
 
 export class EmberGpSinkListEntry extends EzspStruct {
     // A sink list entry
-    _fields = [
+    static _fields = [
         // The sink list type.
         ['type', basic.uint8_t],
         // The EUI64 of the target sink.

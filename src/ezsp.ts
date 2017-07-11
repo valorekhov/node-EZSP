@@ -5,18 +5,19 @@ import { COMMANDS } from './commands';
 import * as bunyan from 'bunyan'
 import { Deferred } from './utils';
 import { EmberStatus } from './types/named';
+import { EventEmitter } from 'events';
 const LOGGER = bunyan.createLogger({ name: 'uart', level: 'debug' })
 
-export class Ezsp {
+export class Ezsp extends EventEmitter {
     ezsp_version = 4;
     _gw: UartProtocol;
-    _callbacks = new Map<number, Function>();
     _seq = 0;
     _awaiting = new Map<number, { expectedId: number, schema: any, deferred: Deferred<Buffer> }>();
     COMMANDS_BY_ID = new Map<number, { name: string, inArgs: any[], outArgs: any[] }>();
     _cbCounter = 0;
 
     constructor() {
+        super();
         for (let name in COMMANDS) {
             let details = (<any>COMMANDS)[name];
             this.COMMANDS_BY_ID.set(details[0], { name, inArgs: details[1], outArgs: details[2] });
@@ -31,8 +32,11 @@ export class Ezsp {
 
     private async startReadQueue() {
         for await (let frame of this._gw) {
-            console.log('Frame received', frame);
-            this.frame_received(frame);
+            try {
+                this.frame_received(frame);
+            } catch (e) {
+                LOGGER.error('Error handling frame', e);
+            }
         }
     }
 
@@ -50,14 +54,14 @@ export class Ezsp {
         return result[0];
     }
 
-    async networkInit(){
+    async networkInit() {
         let result;
         [result] = await this._command("networkInit");
         console.log('network init result', result);
         return result === EmberStatus.SUCCESS;
     }
 
-    async setConfigurationValue(configId : number, value: any){
+    async setConfigurationValue(configId: number, value: any) {
         let ret;
         [ret] = await this.execCommand('setConfigurationValue', configId, value);
         console.assert(ret === 0);
@@ -98,11 +102,11 @@ export class Ezsp {
         var cb;
         fut = new Deferred();
         let results: any[] = [];
-        cb = (frame_name: string, response: any) => {
-            if (item_frames.indexOf(frame_name) >= 0) {
+        cb = (frameName: string, response: any) => {
+            if (item_frames.indexOf(frameName) >= 0) {
                 results.push(response);
             } else {
-                if ((frame_name === completion_frame)) {
+                if ((frameName === completion_frame)) {
                     fut.resolve(response);
                 }
             }
@@ -126,14 +130,12 @@ export class Ezsp {
 
     async formNetwork(parameters: {}) {
         var fut: Deferred<Buffer>, v;
-        var cb;
         fut = new Deferred();
-        cb = (frame_name: string, response: any) => {
-            if ((frame_name === "stackStatusHandler")) {
+        this.on('frame', (frameName: string, response: any) => {
+            if ((frameName === "stackStatusHandler")) {
                 fut.resolve(response);
             }
-        };
-        this.add_callback(cb);
+        })
         v = await this._command("formNetwork", parameters);
         if ((v[0] !== 0)) {
             throw new Error(("Failure forming network:" + v));
@@ -170,8 +172,8 @@ export class Ezsp {
         }
         let cmd = this.COMMANDS_BY_ID.get(frame_id);
         if (!cmd) throw new Error('Unrecognized command from FrameID' + frame_id);
-        let frame_name = cmd.name;
-        LOGGER.debug("Application frame %s (%s) received", frame_id, frame_name);
+        let frameName = cmd.name;
+        LOGGER.debug("Application frame %s (%s) received", frame_id, frameName);
         if (this._awaiting.has(sequence)) {
             let entry = this._awaiting.get(sequence);
             this._awaiting.delete(sequence);
@@ -182,38 +184,12 @@ export class Ezsp {
             }
         } else {
             schema = cmd.outArgs;
-            frame_name = cmd.name;
+            frameName = cmd.name;
             [result, data] = t.deserialize(data, schema);
-            this.handle_callback(frame_name, result);
+            super.emit('frame', frameName, ...result);
         }
         if ((frame_id === 0)) {
             this.ezsp_version = result[0];
         }
-    }
-
-    add_callback(cb: Function) {
-        let id = this._cbCounter++;
-        this._callbacks.set(id, cb);
-        return id;
-    }
-    remove_callback(id: number) {
-        let ret = this._callbacks.get(id);
-        this._callbacks.delete(id);
-        return ret;
-    }
-
-    handle_callback(...args: any[]) {
-        for(let [number, cb] of this._callbacks){
-            try{
-                cb(args);
-            } catch(e){
-                LOGGER.error("Exception running handler" + number, e);
-            }
-        }
-        //for callback_id, handler in self._callbacks.items():
-        //    try:
-        //        handler(*args)
-        //    except Exception as e:
-        //        LOGGER.exception("Exception running handler", exc_info=e)
     }
 }

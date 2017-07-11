@@ -1,5 +1,5 @@
 import * as bunyan from 'bunyan'
-const log = bunyan.createLogger({ name: 'uart', level: 'debug' })
+const log = bunyan.createLogger({ name: 'uart', level: 'info' })
 
 import * as SerialPort from 'serialport'
 import { crc16ccitt } from 'crc';

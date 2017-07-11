@@ -29,7 +29,6 @@ export class EmberMulticastId extends basic.uint16_t {
 }
 export class EmberEUI64 extends basic.fixed_list(8, basic.uint8_t) {
     static deserialize(cls : any, data : Buffer) {
-        debugger;
         var r;
         var arr = super.deserialize(cls, data);
         r = arr[0];

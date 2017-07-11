@@ -137,7 +137,6 @@ export function LVList(itemtype:any) {
 }
 export class _FixedList extends _List {
     static deserialize(cls : any, data : Buffer) {
-        debugger;
         let item;
         let r : any[] = [];
         for (var i = 0; i < cls._length; i++) {
