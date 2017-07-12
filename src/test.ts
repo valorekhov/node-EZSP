@@ -1,5 +1,6 @@
 import { ControllerApplication } from './application';
 import { EmberApsFrame } from './types/struct';
+import { EmberApsOption } from './types/named';
 
 const application = new ControllerApplication();
 
@@ -14,12 +15,14 @@ application.startup('/dev/ttyUSB1', {
   xon: true,
   xoff: true
 }).then(async () => {
-  await application.request(123, {
-    clusterId: 0x11, profileId: 0,
-    sequence: 0,
-    sourceEndpoint: 0x11, destinationEndpoint: 0x11
-  }, Buffer.from('TESTING'));
-  console.log('Sent!')
+  var res = await application.request(0xA329, {
+    clusterId: 0x11, profileId: 0xC105,
+    sequence: 1,
+    sourceEndpoint: 0xE8, destinationEndpoint: 0xE8,
+    options: EmberApsOption.APS_OPTION_FORCE_ROUTE_DISCOVERY | EmberApsOption.APS_OPTION_RETRY
+  }, Buffer.from('\nTESTING!\n'), 0);
+
+  console.log('Sent=', res);
 });
 
 

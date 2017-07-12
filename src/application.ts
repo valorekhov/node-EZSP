@@ -9,7 +9,7 @@ import { EmberOutgoingMessageType } from './types/named';
 export class ControllerApplication extends EventEmitter {
     private direct = EmberOutgoingMessageType.OUTGOING_DIRECT
     private ezsp: Ezsp;
-    private pending = new Map<number, Array<Deferred<void>>>();
+    private pending = new Map<number, Array<Deferred<any>>>();
 
     public async startup(port: string, options: {}) {
         let ezsp = this.ezsp = new Ezsp();
@@ -47,6 +47,13 @@ export class ControllerApplication extends EventEmitter {
             if (isReply) {
                 this.handleReply(sender, apsFrame, tsn, commandId, args);
             }
+        } else if (frameName === 'messageSentHandler') {
+            debugger;
+            if (args[4] != 0) {
+                this.handleFrameFailure.apply(this, args);
+            } else {
+                this.handleFrameSent.apply(this, args);
+            }
         }
 
     }
@@ -59,8 +66,7 @@ export class ControllerApplication extends EventEmitter {
                 return;
             };
             let [sendDeferred, replyDeferred] = arr;
-            console.log(sendDeferred.promise);
-            if ((sendDeferred.promise as any)['_state'] === 0) {
+            if (sendDeferred.isFullfilled) {
                 this.pending.delete(tsn);
             }
             replyDeferred.resolve(args);
@@ -71,29 +77,79 @@ export class ControllerApplication extends EventEmitter {
         }
     }
 
-    public async request(nwk: number, apsFrame: EmberApsFrame, data: Buffer, timeout = 30000) {
+    public async request(nwk: number, apsFrame: EmberApsFrame, data: Buffer, timeout = 30000): Promise<boolean> {
         let seq = apsFrame.sequence;
         console.assert(!this.pending.has(seq));
-        let sendDeferred = new Deferred<void>();
-        let replyDeferred = new Deferred<void>();
+        let sendDeferred = new Deferred<boolean>();
+        let replyDeferred = new Deferred<boolean>();
         this.pending.set(seq, [sendDeferred, replyDeferred]);
 
-        if (timeout > 0) {
-            setTimeout(() => {
-                debugger;
-                throw new Error('Timeout while waiting for reply');
-            }, timeout);
-        }
-        let v = await this.ezsp.sendUnicast(this.direct, nwk, apsFrame, seq, data);
-        console.log('unicast message sent, waiting for reply');
-        if (v[0] != 0) {
-            this.pending.delete(seq);
-            sendDeferred.reject();
-            replyDeferred.reject();
-            throw new Error(`Message send failure ${v[0]}`)
-        }
+        let handle;
+        try {
 
-        await sendDeferred.promise;
-        await replyDeferred.promise;
+            if (timeout > 0) {
+                handle = setTimeout(() => {
+                    throw new Error('Timeout while waiting for reply');
+                }, timeout);
+            }
+
+            let v = await this.ezsp.sendUnicast(this.direct, nwk, apsFrame, seq, data);
+            console.log('unicast message sent, waiting for reply');
+            if (v[0] != 0) {
+                this.pending.delete(seq);
+                sendDeferred.reject(false);
+                replyDeferred.reject(false);
+                throw new Error(`Message send failure ${v[0]}`)
+            }
+
+            await sendDeferred.promise;
+            debugger;
+            if (timeout > 0){
+                await replyDeferred.promise;
+            } else {
+                this.pending.delete(seq);
+            }
+            return true;
+        } catch (e) {
+            return false;
+        } finally {
+            if (handle)
+                clearTimeout(handle);
+        }
+    }
+
+    private handleFrameFailure(messageType: number, destination: number, apsFrame: EmberApsFrame, messageTag: number, status: number, message: Buffer) {
+        try {
+            var arr = this.pending.get(messageTag);
+            if (!arr) {
+                console.log("Unexpected message send failure");
+                return;
+            }
+            this.pending.delete(messageTag);
+            let [sendDeferred,] = arr;
+            let e = new Error('Message send failure:' + status);
+            console.log(e);
+            sendDeferred.reject(e);
+            //replyDeferred.reject(e);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    private handleFrameSent(messageType: number, destination: number, apsFrame: EmberApsFrame, messageTag: number, status: number, message: Buffer) {
+        try {
+            var arr = this.pending.get(messageTag);
+            if (!arr) {
+                console.log("Unexpected message send notification");
+                return;
+            }
+            let [sendDeferred, replyDeferred] = arr;
+            if (replyDeferred.isFullfilled) {
+                this.pending.delete(messageTag);
+            }
+            sendDeferred.resolve(true);
+        } catch (e) {
+            console.log(e);
+        }
     }
 }
