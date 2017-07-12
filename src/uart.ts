@@ -1,5 +1,5 @@
 import * as bunyan from 'bunyan'
-const log = bunyan.createLogger({ name: 'uart', level: 'info' })
+const log = bunyan.createLogger({ name: 'uart', level: 'debug' })
 
 import * as SerialPort from 'serialport'
 import { crc16ccitt } from 'crc';
@@ -207,7 +207,7 @@ export class UartProtocol implements AsyncIterable<Buffer> {
     async _send_task() {
         for await (const item of this._sendq) {
             let data, rxmit, seq, success;
-            console.log('IteratorResult', item);
+            //console.log('IteratorResult', item);
             if ((item instanceof Terminator)) {
                 return;
             }

@@ -4,8 +4,9 @@ import { COMMANDS } from './commands';
 
 import * as bunyan from 'bunyan'
 import { Deferred } from './utils';
-import { EmberStatus } from './types/named';
+import { EmberStatus, EmberOutgoingMessageType } from './types/named';
 import { EventEmitter } from 'events';
+import { EmberApsFrame } from './types/struct';
 const LOGGER = bunyan.createLogger({ name: 'uart', level: 'debug' })
 
 export class Ezsp extends EventEmitter {
@@ -191,5 +192,9 @@ export class Ezsp extends EventEmitter {
         if ((frame_id === 0)) {
             this.ezsp_version = result[0];
         }
+    }
+
+    public sendUnicast(direct: EmberOutgoingMessageType, nwk: number, apsFrame: EmberApsFrame, seq: number, data: Buffer) {
+        return this.execCommand('sendUnicast', direct, nwk, apsFrame, seq, data);
     }
 }

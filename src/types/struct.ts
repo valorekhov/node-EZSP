@@ -8,11 +8,12 @@ export class EzspStruct {
         //    for field in self._fields:
         //        setattr(self, field[0], getattr(args[0], field[0]))
     }
-    static serialize(cls: any) {
-        //    r = b''
-        //for field in self._fields:
-        //    r += getattr(self, field[0]).serialize()
-        //return r
+    static serialize(cls: any, obj: any) {
+        return Buffer.concat(cls._fields.map( (field:any[]) => {
+            let value = obj[field[0]];
+            console.assert(field[1])
+            return field[1].serialize(field[1], value);
+        }))
     }
 
     static deserialize(cls: any, data: Buffer) {
@@ -82,6 +83,16 @@ export class EmberZigbeeNetwork extends EzspStruct {
 }
 
 export class EmberApsFrame extends EzspStruct {
+
+    public profileId: number;
+    public sequence: number;
+    public clusterId: number;
+    public sourceEndpoint: number;
+    public destinationEndpoint: number;
+    public groupId?: number;
+    public options?: named.EmberApsOption;
+
+
     // ZigBee APS frame parameters.
     static _fields = [
         // The application profile ID that describes the format of the message.

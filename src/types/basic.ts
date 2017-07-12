@@ -2,7 +2,7 @@ export class int_t {
     static _signed = true
 
     static serialize(cls : any, value: number){
-        let buffer = Buffer.alloc(cls._size);
+        let buffer = Buffer.alloc(cls._size, 0);
         if (cls._signed){
             buffer.writeIntLE(value, 0, cls._size);
         } else {
@@ -80,7 +80,12 @@ export  class Double extends number {
 
 export class LVBytes  {
     static serialize(cls: any, value: any[]) {
-        return [this.length].concat(value);
+        if (Buffer.isBuffer(value)){
+            var ret = Buffer.alloc(1);
+            ret.writeUInt8(value.length, 0);
+            return Buffer.concat([ret, value]);
+        }
+        return Buffer.from([value.length].concat(value));
     }
     static deserialize(cls : any, data : Buffer) {
         var l, s;
