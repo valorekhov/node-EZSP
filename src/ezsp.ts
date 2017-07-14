@@ -12,6 +12,7 @@ const LOGGER = bunyan.createLogger({ name: 'uart', level: 'debug' })
 export class Ezsp extends EventEmitter {
     ezsp_version = 4;
     _gw: UartProtocol;
+    _port : any;
     _seq = 0;
     _awaiting = new Map<number, { expectedId: number, schema: any, deferred: Deferred<Buffer> }>();
     COMMANDS_BY_ID = new Map<number, { name: string, inArgs: any[], outArgs: any[] }>();
@@ -27,7 +28,7 @@ export class Ezsp extends EventEmitter {
 
     async connect(device: string, options: {}) {
         console.assert(!this._gw);
-        this._gw = await UartProtocol.connect(device, options);
+        [this._gw, this._port] = await UartProtocol.connect(device, options);
         this.startReadQueue();
     }
 
@@ -69,9 +70,9 @@ export class Ezsp extends EventEmitter {
         LOGGER.debug('Set %s = %s', configId, value);
     }
 
-    /*close() {
-        return this._gw.close();
-    }*/
+    close() {
+        return this._port.close();
+    }
 
     private _ezsp_frame(name: string, ...args: any[]) {
         var c, data, frame;

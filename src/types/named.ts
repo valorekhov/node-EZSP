@@ -28,6 +28,17 @@ export class EmberPanId extends basic.uint16_t {
 export class EmberMulticastId extends basic.uint16_t {
 }
 export class EmberEUI64 extends basic.fixed_list(8, basic.uint8_t) {
+
+    _str : string;
+
+    constructor(private _value: number[]){
+        super()
+        if (_value.length !== 8){
+            throw new Error('Incorrect value passed');
+        }
+        this._str = Buffer.from(_value).toString('hex');
+    }
+
     static deserialize(cls : any, data : Buffer) {
         var r;
         var arr = super.deserialize(cls, data);
@@ -38,6 +49,14 @@ export class EmberEUI64 extends basic.fixed_list(8, basic.uint8_t) {
     static serialize(cls: any, value: any[]) {
         console.assert(cls._length === cls.length);
         return value.reverse().map(i=>i.serialize(cls, i));
+    }
+
+    public get value(){
+        return this._value;
+    }
+
+    public toString(){
+        return this._str
     }
 
 /*

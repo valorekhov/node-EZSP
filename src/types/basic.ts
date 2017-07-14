@@ -153,8 +153,8 @@ export class _FixedList extends _List {
 }
 export function fixed_list(length : number, itemtype : any) {
     class FixedList extends _FixedList {
+        static _itemtype = itemtype;
+        static _length = length
     }
-    (<any>FixedList)['_itemtype'] = itemtype;
-    (<any>FixedList)['_length'] = length;
     return FixedList;
 }

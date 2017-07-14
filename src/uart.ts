@@ -346,7 +346,7 @@ export class UartProtocol implements AsyncIterable<Buffer> {
         return out;
     }
 
-    static connect(portAddress: string, connectionOptions: {}): Promise<UartProtocol> {
+    static connect(portAddress: string, connectionOptions: {}): Promise<[UartProtocol, SerialPort]> {
         const SerialPort = require('serialport');
         const port = new SerialPort(portAddress, connectionOptions);
         const protocol = new UartProtocol((data: Buffer) => {
@@ -371,7 +371,7 @@ export class UartProtocol implements AsyncIterable<Buffer> {
                 protocol.reset().then(
                     () => {
                         log.debug('successfully reset');
-                        resolve(protocol);
+                        resolve([protocol, port]);
                     }, (err) => log.error(err) || reject()
                 );
             }, (err: any) => log.error(err) || reject());

@@ -14,6 +14,10 @@ application.startup('/dev/ttyUSB1', {
   xon: true,
   xoff: true
 }).then(async () => {
+
+  let localEui64 = application.getLocalIEEE64Address();
+  console.log('Local Eui64:', localEui64);
+
   await application.request(123, {
     clusterId: 0x11, profileId: 0,
     sequence: 0,

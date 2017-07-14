@@ -3,13 +3,14 @@ import { EzspConfigId, EmberZdoConfigurationFlags } from './types';
 import { EventEmitter } from "events";
 import { EmberApsFrame } from './types/struct';
 import { Deferred } from './utils/index';
-import { EmberOutgoingMessageType } from './types/named';
+import { EmberOutgoingMessageType, EmberEUI64 } from './types/named';
 
 
 export class ControllerApplication extends EventEmitter {
     private direct = EmberOutgoingMessageType.OUTGOING_DIRECT
     private ezsp: Ezsp;
     private pending = new Map<number, Array<Deferred<void>>>();
+    private eui64ToNodeId = new Map<string, number>();
 
     public async startup(port: string, options: {}) {
         let ezsp = this.ezsp = new Ezsp();
@@ -71,7 +72,7 @@ export class ControllerApplication extends EventEmitter {
         }
     }
 
-    public async request(nwk: number, apsFrame: EmberApsFrame, data: Buffer, timeout = 30000) {
+    public async request(nwk: number | EmberEUI64, apsFrame: EmberApsFrame, data: Buffer, timeout = 30000) {
         let seq = apsFrame.sequence;
         console.assert(!this.pending.has(seq));
         let sendDeferred = new Deferred<void>();
@@ -84,7 +85,23 @@ export class ControllerApplication extends EventEmitter {
                 throw new Error('Timeout while waiting for reply');
             }, timeout);
         }
-        let v = await this.ezsp.sendUnicast(this.direct, nwk, apsFrame, seq, data);
+
+        if (typeof nwk !== 'number'){
+            let eui64 = nwk as EmberEUI64;
+            let strEui64 = eui64.toString();
+            let nodeId = this.eui64ToNodeId.get(strEui64);
+            if (nodeId === undefined){
+                nodeId = await this.ezsp.execCommand('lookupNodeIdByEui64', eui64).then(arr=>arr[0]);
+                if (nodeId){
+                    this.eui64ToNodeId.set(strEui64, nodeId);
+                } else {
+                    throw new Error('Unknown EUI64:' + strEui64);
+                }
+            }
+            nwk = nodeId;
+        }
+
+        let v = await this.ezsp.sendUnicast(this.direct, nwk as number, apsFrame, seq, data);
         console.log('unicast message sent, waiting for reply');
         if (v[0] != 0) {
             this.pending.delete(seq);
@@ -95,5 +112,14 @@ export class ControllerApplication extends EventEmitter {
 
         await sendDeferred.promise;
         await replyDeferred.promise;
+    }
+
+    public stop(){
+        return this.ezsp.close();
+    }
+
+    public getLocalIEEE64Address() : Promise<EmberEUI64>{
+        return this.ezsp.execCommand('getEui64')
+            .then((ret)=>new EmberEUI64(ret as any));
     }
 }
