@@ -1,56 +1,82 @@
-import * as t from './types';
+import {/* Basic Types */
+    int8s,
+    uint8_t,
+    uint16_t,
+    uint32_t,
+    LVBytes,
+    fixed_list,
+
+    /* Named Types */
+    EmberRf4ceTxOption, EmberRf4ceNodeCapabilities, EmberNodeId,
+    EmberPanId, EmberEUI64, EmberLibraryStatus, SecureEzspSecurityType, SecureEzspSecurityLevel, EmberGpSecurityLevel,
+    EmberGpKeyType, SecureEzspRandomNumber,  Bool, EzspConfigId, EzspValueId, EzspExtendedValueId, 
+     EzspPolicyId, EzspDecisionId, EzspMfgTokenId, EzspStatus, EmberStatus, EmberEventUnits, EmberNodeType,
+    EmberNetworkStatus, EmberIncomingMessageType, EmberOutgoingMessageType, EmberMacPassthroughType,  
+    EzspNetworkScanType, EmberJoinDecision,   EmberKeyType, 
+    EmberDeviceUpdate, EmberKeyStatus, EmberCounterType,    
+     EzspZllNetworkOperation,  
+
+    /* Structs */
+    EmberNetworkParameters, EmberZigbeeNetwork, EmberApsFrame, EmberBindingTableEntry, EmberMulticastTableEntry,
+    EmberKeyData, EmberCertificateData, EmberPublicKeyData, EmberPrivateKeyData, EmberSmacData, EmberSignatureData,
+    EmberCertificate283k1Data, EmberPublicKey283k1Data, EmberPrivateKey283k1Data, EmberSignature283k1Data, EmberMessageDigest,
+    EmberAesMmoHashContext, EmberNeighborTableEntry, EmberRouteTableEntry, EmberInitialSecurityState, EmberCurrentSecurityState,
+    EmberKeyStruct, EmberNetworkInitStruct,  EmberZllNetwork, EmberZllInitialSecurityState,
+    EmberZllDeviceInfoRecord, EmberZllAddressAssignment, EmberTokTypeStackZllData, EmberTokTypeStackZllSecurity,
+    EmberRf4ceVendorInfo, EmberRf4ceApplicationInfo, EmberRf4cePairingTableEntry, EmberGpAddress, EmberGpSinkListEntry
+} from './types';
 
 export const COMMANDS = {
-    "version": [0, [t.uint8_t],
-        [t.uint8_t, t.uint8_t, t.uint16_t]
+    "version": [0, [uint8_t],
+        [uint8_t, uint8_t, uint16_t]
     ],
-    "getConfigurationValue": [82, [t.EzspConfigId],
-        [t.EzspStatus, t.uint16_t]
+    "getConfigurationValue": [82, [EzspConfigId],
+        [EzspStatus, uint16_t]
     ],
-    "setConfigurationValue": [83, [t.EzspConfigId, t.uint16_t],
-        [t.EzspStatus]
+    "setConfigurationValue": [83, [EzspConfigId, uint16_t],
+        [EzspStatus]
     ],
-    "setPolicy": [85, [t.EzspPolicyId, t.EzspDecisionId],
-        [t.EzspStatus]
+    "setPolicy": [85, [EzspPolicyId, EzspDecisionId],
+        [EzspStatus]
     ],
-    "getPolicy": [86, [t.EzspPolicyId],
-        [t.EzspStatus, t.EzspDecisionId]
+    "getPolicy": [86, [EzspPolicyId],
+        [EzspStatus, EzspDecisionId]
     ],
-    "getValue": [170, [t.EzspValueId],
-        [t.EzspStatus, t.LVBytes]
+    "getValue": [170, [EzspValueId],
+        [EzspStatus, LVBytes]
     ],
-    "getExtendedValue": [3, [t.EzspExtendedValueId, t.uint32_t],
-        [t.EzspStatus, t.LVBytes]
+    "getExtendedValue": [3, [EzspExtendedValueId, uint32_t],
+        [EzspStatus, LVBytes]
     ],
-    "setValue": [171, [t.EzspValueId, t.LVBytes],
-        [t.EzspStatus]
+    "setValue": [171, [EzspValueId, LVBytes],
+        [EzspStatus]
     ],
-    "setGpioCurrentConfiguration": [172, [t.uint8_t, t.uint8_t, t.uint8_t],
-        [t.EzspStatus]
+    "setGpioCurrentConfiguration": [172, [uint8_t, uint8_t, uint8_t],
+        [EzspStatus]
     ],
-    "setGpioPowerUpDownConfiguration": [173, [t.uint8_t, t.uint8_t, t.uint8_t, t.uint8_t, t.uint8_t],
-        [t.EzspStatus]
+    "setGpioPowerUpDownConfiguration": [173, [uint8_t, uint8_t, uint8_t, uint8_t, uint8_t],
+        [EzspStatus]
     ],
-    "setGpioRadioPowerMask": [174, [t.uint32_t],
+    "setGpioRadioPowerMask": [174, [uint32_t],
         []
     ],
-    "setCtune": [245, [t.uint16_t],
+    "setCtune": [245, [uint16_t],
         []
     ],
     "getCtune": [246, [],
-        [t.uint16_t]
+        [uint16_t]
     ],
-    "setChannelMap": [247, [t.uint8_t, t.uint8_t],
+    "setChannelMap": [247, [uint8_t, uint8_t],
         []
     ],
     "nop": [5, [],
         []
     ],
-    "echo": [129, [t.LVBytes],
-        [t.LVBytes]
+    "echo": [129, [LVBytes],
+        [LVBytes]
     ],
     "invalidCommand": [88, [],
-        [t.EzspStatus]
+        [EzspStatus]
     ],
     "callback": [6, [],
         []
@@ -58,596 +84,596 @@ export const COMMANDS = {
     "noCallbacks": [7, [],
         []
     ],
-    "setToken": [9, [t.uint8_t, t.fixed_list(8, t.uint8_t)],
-        [t.EmberStatus]
+    "setToken": [9, [uint8_t, fixed_list(8, uint8_t)],
+        [EmberStatus]
     ],
-    "getToken": [10, [t.uint8_t],
-        [t.EmberStatus, t.fixed_list(8, t.uint8_t)]
+    "getToken": [10, [uint8_t],
+        [EmberStatus, fixed_list(8, uint8_t)]
     ],
-    "getMfgToken": [11, [t.EzspMfgTokenId],
-        [t.LVBytes]
+    "getMfgToken": [11, [EzspMfgTokenId],
+        [LVBytes]
     ],
-    "setMfgToken": [12, [t.EzspMfgTokenId, t.LVBytes],
-        [t.EmberStatus]
+    "setMfgToken": [12, [EzspMfgTokenId, LVBytes],
+        [EmberStatus]
     ],
     "stackTokenChangedHandler": [13, [],
-        [t.uint16_t]
+        [uint16_t]
     ],
     "getRandomNumber": [73, [],
-        [t.EmberStatus, t.uint16_t]
+        [EmberStatus, uint16_t]
     ],
-    "setTimer": [14, [t.uint8_t, t.uint16_t, t.EmberEventUnits, t.Bool],
-        [t.EmberStatus]
+    "setTimer": [14, [uint8_t, uint16_t, EmberEventUnits, Bool],
+        [EmberStatus]
     ],
-    "getTimer": [78, [t.uint8_t],
-        [t.uint16_t, t.EmberEventUnits, t.Bool]
+    "getTimer": [78, [uint8_t],
+        [uint16_t, EmberEventUnits, Bool]
     ],
     "timerHandler": [15, [],
-        [t.uint8_t]
+        [uint8_t]
     ],
-    "debugWrite": [18, [t.Bool, t.LVBytes],
-        [t.EmberStatus]
+    "debugWrite": [18, [Bool, LVBytes],
+        [EmberStatus]
     ],
     "readAndClearCounters": [101, [],
-        [t.fixed_list(t.EmberCounterType.COUNTER_TYPE_COUNT, t.uint16_t)]
+        [fixed_list(EmberCounterType.COUNTER_TYPE_COUNT, uint16_t)]
     ],
     "readCounters": [241, [],
-        [t.fixed_list(t.EmberCounterType.COUNTER_TYPE_COUNT, t.uint16_t)]
+        [fixed_list(EmberCounterType.COUNTER_TYPE_COUNT, uint16_t)]
     ],
     "counterRolloverHandler": [242, [],
-        [t.EmberCounterType]
+        [EmberCounterType]
     ],
-    "delayTest": [157, [t.uint16_t],
+    "delayTest": [157, [uint16_t],
         []
     ],
-    "getLibraryStatus": [1, [t.uint8_t],
-        [t.EmberLibraryStatus]
+    "getLibraryStatus": [1, [uint8_t],
+        [EmberLibraryStatus]
     ],
     "getXncpInfo": [19, [],
-        [t.EmberStatus, t.uint16_t, t.uint16_t]
+        [EmberStatus, uint16_t, uint16_t]
     ],
-    "customFrame": [71, [t.LVBytes],
-        [t.EmberStatus, t.LVBytes]
+    "customFrame": [71, [LVBytes],
+        [EmberStatus, LVBytes]
     ],
     "customFrameHandler": [84, [],
-        [t.LVBytes]
+        [LVBytes]
     ],
     "getEui64": [38, [],
-        [t.EmberEUI64]
+        [EmberEUI64]
     ],
     "getNodeId": [39, [],
-        [t.EmberNodeId]
+        [EmberNodeId]
     ],
     "networkInit": [23, [],
-        [t.EmberStatus]
+        [EmberStatus]
     ],
-    "setManufacturerCode": [21, [t.uint16_t],
+    "setManufacturerCode": [21, [uint16_t],
         []
     ],
-    "setPowerDescriptor": [22, [t.uint16_t],
+    "setPowerDescriptor": [22, [uint16_t],
         []
     ],
-    "networkInitExtended": [112, [t.EmberNetworkInitStruct],
-        [t.EmberStatus]
+    "networkInitExtended": [112, [EmberNetworkInitStruct],
+        [EmberStatus]
     ],
     "networkState": [24, [],
-        [t.EmberNetworkStatus]
+        [EmberNetworkStatus]
     ],
     "stackStatusHandler": [25, [],
-        [t.EmberStatus]
+        [EmberStatus]
     ],
-    "startScan": [26, [t.EzspNetworkScanType, t.uint32_t, t.uint8_t],
-        [t.EmberStatus]
+    "startScan": [26, [EzspNetworkScanType, uint32_t, uint8_t],
+        [EmberStatus]
     ],
     "energyScanResultHandler": [72, [],
-        [t.uint8_t, t.int8s]
+        [uint8_t, int8s]
     ],
     "networkFoundHandler": [27, [],
-        [t.EmberZigbeeNetwork, t.uint8_t, t.int8s]
+        [EmberZigbeeNetwork, uint8_t, int8s]
     ],
     "scanCompleteHandler": [28, [],
-        [t.uint8_t, t.EmberStatus]
+        [uint8_t, EmberStatus]
     ],
     "stopScan": [29, [],
-        [t.EmberStatus]
+        [EmberStatus]
     ],
-    "formNetwork": [30, [t.EmberNetworkParameters],
-        [t.EmberStatus]
+    "formNetwork": [30, [EmberNetworkParameters],
+        [EmberStatus]
     ],
-    "joinNetwork": [31, [t.EmberNodeType, t.EmberNetworkParameters],
-        [t.EmberStatus]
+    "joinNetwork": [31, [EmberNodeType, EmberNetworkParameters],
+        [EmberStatus]
     ],
     "leaveNetwork": [32, [],
-        [t.EmberStatus]
+        [EmberStatus]
     ],
-    "findAndRejoinNetwork": [33, [t.Bool, t.uint32_t],
-        [t.EmberStatus]
+    "findAndRejoinNetwork": [33, [Bool, uint32_t],
+        [EmberStatus]
     ],
-    "permitJoining": [34, [t.uint8_t],
-        [t.EmberStatus]
+    "permitJoining": [34, [uint8_t],
+        [EmberStatus]
     ],
     "childJoinHandler": [35, [],
-        [t.uint8_t, t.Bool, t.EmberNodeId, t.EmberEUI64, t.EmberNodeType]
+        [uint8_t, Bool, EmberNodeId, EmberEUI64, EmberNodeType]
     ],
-    "energyScanRequest": [156, [t.EmberNodeId, t.uint32_t, t.uint8_t, t.uint16_t],
-        [t.EmberStatus]
+    "energyScanRequest": [156, [EmberNodeId, uint32_t, uint8_t, uint16_t],
+        [EmberStatus]
     ],
     "getNetworkParameters": [40, [],
-        [t.EmberStatus, t.EmberNodeType, t.EmberNetworkParameters]
+        [EmberStatus, EmberNodeType, EmberNetworkParameters]
     ],
     "getParentChildParameters": [41, [],
-        [t.uint8_t, t.EmberEUI64, t.EmberNodeId]
+        [uint8_t, EmberEUI64, EmberNodeId]
     ],
-    "getChildData": [74, [t.uint8_t],
-        [t.EmberStatus, t.EmberNodeId, t.EmberEUI64, t.EmberNodeType]
+    "getChildData": [74, [uint8_t],
+        [EmberStatus, EmberNodeId, EmberEUI64, EmberNodeType]
     ],
-    "getNeighbor": [121, [t.uint8_t],
-        [t.EmberStatus, t.EmberNeighborTableEntry]
+    "getNeighbor": [121, [uint8_t],
+        [EmberStatus, EmberNeighborTableEntry]
     ],
     "neighborCount": [122, [],
-        [t.uint8_t]
+        [uint8_t]
     ],
-    "getRouteTableEntry": [123, [t.uint8_t],
-        [t.EmberStatus, t.EmberRouteTableEntry]
+    "getRouteTableEntry": [123, [uint8_t],
+        [EmberStatus, EmberRouteTableEntry]
     ],
-    "setRadioPower": [153, [t.int8s],
-        [t.EmberStatus]
+    "setRadioPower": [153, [int8s],
+        [EmberStatus]
     ],
-    "setRadioChannel": [154, [t.uint8_t],
-        [t.EmberStatus]
+    "setRadioChannel": [154, [uint8_t],
+        [EmberStatus]
     ],
-    "setConcentrator": [16, [t.Bool, t.uint16_t, t.uint16_t, t.uint16_t, t.uint8_t, t.uint8_t, t.uint8_t],
-        [t.EmberStatus]
+    "setConcentrator": [16, [Bool, uint16_t, uint16_t, uint16_t, uint8_t, uint8_t, uint8_t],
+        [EmberStatus]
     ],
     "clearBindingTable": [42, [],
-        [t.EmberStatus]
+        [EmberStatus]
     ],
-    "setBinding": [43, [t.uint8_t, t.EmberBindingTableEntry],
-        [t.EmberStatus]
+    "setBinding": [43, [uint8_t, EmberBindingTableEntry],
+        [EmberStatus]
     ],
-    "getBinding": [44, [t.uint8_t],
-        [t.EmberStatus, t.EmberBindingTableEntry]
+    "getBinding": [44, [uint8_t],
+        [EmberStatus, EmberBindingTableEntry]
     ],
-    "deleteBinding": [45, [t.uint8_t],
-        [t.EmberStatus]
+    "deleteBinding": [45, [uint8_t],
+        [EmberStatus]
     ],
-    "bindingIsActive": [46, [t.uint8_t],
-        [t.Bool]
+    "bindingIsActive": [46, [uint8_t],
+        [Bool]
     ],
-    "getBindingRemoteNodeId": [47, [t.uint8_t],
-        [t.EmberNodeId]
+    "getBindingRemoteNodeId": [47, [uint8_t],
+        [EmberNodeId]
     ],
-    "setBindingRemoteNodeId": [48, [t.uint8_t],
+    "setBindingRemoteNodeId": [48, [uint8_t],
         []
     ],
     "remoteSetBindingHandler": [49, [],
-        [t.EmberBindingTableEntry]
+        [EmberBindingTableEntry]
     ],
     "remoteDeleteBindingHandler": [50, [],
-        [t.uint8_t, t.EmberStatus]
+        [uint8_t, EmberStatus]
     ],
     "maximumPayloadLength": [51, [],
-        [t.uint8_t]
+        [uint8_t]
     ],
-    "sendUnicast": [52, [t.EmberOutgoingMessageType, t.EmberNodeId, t.EmberApsFrame, t.uint8_t, t.LVBytes],
-        [t.EmberStatus, t.uint8_t]
+    "sendUnicast": [52, [EmberOutgoingMessageType, EmberNodeId, EmberApsFrame, uint8_t, LVBytes],
+        [EmberStatus, uint8_t]
     ],
-    "sendBroadcast": [54, [t.EmberNodeId, t.EmberApsFrame, t.uint8_t, t.uint8_t, t.LVBytes],
-        [t.EmberStatus, t.uint8_t]
+    "sendBroadcast": [54, [EmberNodeId, EmberApsFrame, uint8_t, uint8_t, LVBytes],
+        [EmberStatus, uint8_t]
     ],
-    "proxyBroadcast": [55, [t.EmberNodeId, t.EmberNodeId, t.uint8_t, t.EmberApsFrame, t.uint8_t, t.uint8_t, t.LVBytes],
-        [t.EmberStatus, t.uint8_t]
+    "proxyBroadcast": [55, [EmberNodeId, EmberNodeId, uint8_t, EmberApsFrame, uint8_t, uint8_t, LVBytes],
+        [EmberStatus, uint8_t]
     ],
-    "sendMulticast": [56, [t.EmberApsFrame, t.uint8_t, t.uint8_t, t.uint8_t, t.LVBytes],
-        [t.EmberStatus, t.uint8_t]
+    "sendMulticast": [56, [EmberApsFrame, uint8_t, uint8_t, uint8_t, LVBytes],
+        [EmberStatus, uint8_t]
     ],
-    "sendReply": [57, [t.EmberNodeId, t.EmberApsFrame, t.LVBytes],
-        [t.EmberStatus]
+    "sendReply": [57, [EmberNodeId, EmberApsFrame, LVBytes],
+        [EmberStatus]
     ],
     "messageSentHandler": [63, [],
-        [t.EmberOutgoingMessageType, t.uint16_t, t.EmberApsFrame, t.uint8_t, t.EmberStatus, t.LVBytes]
+        [EmberOutgoingMessageType, uint16_t, EmberApsFrame, uint8_t, EmberStatus, LVBytes]
     ],
-    "sendManyToOneRouteRequest": [65, [t.uint16_t, t.uint8_t],
-        [t.EmberStatus]
+    "sendManyToOneRouteRequest": [65, [uint16_t, uint8_t],
+        [EmberStatus]
     ],
-    "pollForData": [66, [t.uint16_t, t.EmberEventUnits, t.uint8_t],
-        [t.EmberStatus]
+    "pollForData": [66, [uint16_t, EmberEventUnits, uint8_t],
+        [EmberStatus]
     ],
     "pollCompleteHandler": [67, [],
-        [t.EmberStatus]
+        [EmberStatus]
     ],
     "pollHandler": [68, [],
-        [t.EmberNodeId]
+        [EmberNodeId]
     ],
     "incomingSenderEui64Handler": [98, [],
-        [t.EmberEUI64]
+        [EmberEUI64]
     ],
     "incomingMessageHandler": [69, [],
-        [t.EmberIncomingMessageType, t.EmberApsFrame, t.uint8_t, t.int8s, t.EmberNodeId, t.uint8_t, t.uint8_t, t.LVBytes]
+        [EmberIncomingMessageType, EmberApsFrame, uint8_t, int8s, EmberNodeId, uint8_t, uint8_t, LVBytes]
     ],
     "incomingRouteRecordHandler": [89, [],
-        [t.EmberNodeId, t.EmberEUI64, t.uint8_t, t.int8s, t.LVBytes]
+        [EmberNodeId, EmberEUI64, uint8_t, int8s, LVBytes]
     ],
     "incomingManyToOneRouteRequestHandler": [125, [],
-        [t.EmberNodeId, t.EmberEUI64, t.uint8_t]
+        [EmberNodeId, EmberEUI64, uint8_t]
     ],
     "incomingRouteErrorHandler": [128, [],
-        [t.EmberStatus, t.EmberNodeId]
+        [EmberStatus, EmberNodeId]
     ],
-    "addressTableEntryIsActive": [91, [t.uint8_t],
-        [t.Bool]
+    "addressTableEntryIsActive": [91, [uint8_t],
+        [Bool]
     ],
-    "setAddressTableRemoteEui64": [92, [t.uint8_t, t.EmberEUI64],
-        [t.EmberStatus]
+    "setAddressTableRemoteEui64": [92, [uint8_t, EmberEUI64],
+        [EmberStatus]
     ],
-    "setAddressTableRemoteNodeId": [93, [t.uint8_t, t.EmberNodeId],
+    "setAddressTableRemoteNodeId": [93, [uint8_t, EmberNodeId],
         []
     ],
-    "getAddressTableRemoteEui64": [94, [t.uint8_t],
-        [t.EmberEUI64]
+    "getAddressTableRemoteEui64": [94, [uint8_t],
+        [EmberEUI64]
     ],
-    "getAddressTableRemoteNodeId": [95, [t.uint8_t],
-        [t.EmberNodeId]
+    "getAddressTableRemoteNodeId": [95, [uint8_t],
+        [EmberNodeId]
     ],
-    "setExtendedTimeout": [126, [t.EmberEUI64, t.Bool],
+    "setExtendedTimeout": [126, [EmberEUI64, Bool],
         []
     ],
-    "getExtendedTimeout": [127, [t.EmberEUI64],
-        [t.Bool]
+    "getExtendedTimeout": [127, [EmberEUI64],
+        [Bool]
     ],
-    "replaceAddressTableEntry": [130, [t.uint8_t, t.EmberEUI64, t.EmberNodeId, t.Bool],
-        [t.EmberStatus, t.EmberEUI64, t.EmberNodeId, t.Bool]
+    "replaceAddressTableEntry": [130, [uint8_t, EmberEUI64, EmberNodeId, Bool],
+        [EmberStatus, EmberEUI64, EmberNodeId, Bool]
     ],
-    "lookupNodeIdByEui64": [96, [t.EmberEUI64],
-        [t.EmberNodeId]
+    "lookupNodeIdByEui64": [96, [EmberEUI64],
+        [EmberNodeId]
     ],
-    "lookupEui64ByNodeId": [97, [t.EmberNodeId],
-        [t.EmberStatus, t.EmberEUI64]
+    "lookupEui64ByNodeId": [97, [EmberNodeId],
+        [EmberStatus, EmberEUI64]
     ],
-    "getMulticastTableEntry": [99, [t.uint8_t],
-        [t.EmberStatus, t.EmberMulticastTableEntry]
+    "getMulticastTableEntry": [99, [uint8_t],
+        [EmberStatus, EmberMulticastTableEntry]
     ],
-    "setMulticastTableEntry": [100, [t.uint8_t, t.EmberMulticastTableEntry],
-        [t.EmberStatus]
+    "setMulticastTableEntry": [100, [uint8_t, EmberMulticastTableEntry],
+        [EmberStatus]
     ],
     "idConflictHandler": [124, [],
-        [t.EmberNodeId]
+        [EmberNodeId]
     ],
-    "sendRawMessage": [150, [t.LVBytes],
-        [t.EmberStatus]
+    "sendRawMessage": [150, [LVBytes],
+        [EmberStatus]
     ],
     "macPassthroughMessageHandler": [151, [],
-        [t.EmberMacPassthroughType, t.uint8_t, t.int8s, t.LVBytes]
+        [EmberMacPassthroughType, uint8_t, int8s, LVBytes]
     ],
     "macFilterMatchMessageHandler": [70, [],
-        [t.uint8_t, t.EmberMacPassthroughType, t.uint8_t, t.int8s, t.LVBytes]
+        [uint8_t, EmberMacPassthroughType, uint8_t, int8s, LVBytes]
     ],
     "rawTransmitCompleteHandler": [152, [],
-        [t.EmberStatus]
+        [EmberStatus]
     ],
-    "setInitialSecurityState": [104, [t.EmberInitialSecurityState],
-        [t.EmberStatus]
+    "setInitialSecurityState": [104, [EmberInitialSecurityState],
+        [EmberStatus]
     ],
     "getCurrentSecurityState": [105, [],
-        [t.EmberStatus, t.EmberCurrentSecurityState]
+        [EmberStatus, EmberCurrentSecurityState]
     ],
-    "getKey": [106, [t.EmberKeyType],
-        [t.EmberStatus, t.EmberKeyStruct]
+    "getKey": [106, [EmberKeyType],
+        [EmberStatus, EmberKeyStruct]
     ],
     "switchNetworkKeyHandler": [110, [],
-        [t.uint8_t]
+        [uint8_t]
     ],
-    "getKeyTableEntry": [113, [t.uint8_t],
-        [t.EmberStatus, t.EmberKeyStruct]
+    "getKeyTableEntry": [113, [uint8_t],
+        [EmberStatus, EmberKeyStruct]
     ],
-    "setKeyTableEntry": [114, [t.uint8_t, t.EmberEUI64, t.Bool, t.EmberKeyData],
-        [t.EmberStatus]
+    "setKeyTableEntry": [114, [uint8_t, EmberEUI64, Bool, EmberKeyData],
+        [EmberStatus]
     ],
-    "findKeyTableEntry": [117, [t.EmberEUI64, t.Bool],
-        [t.uint8_t]
+    "findKeyTableEntry": [117, [EmberEUI64, Bool],
+        [uint8_t]
     ],
-    "addOrUpdateKeyTableEntry": [102, [t.EmberEUI64, t.Bool, t.EmberKeyData],
-        [t.EmberStatus]
+    "addOrUpdateKeyTableEntry": [102, [EmberEUI64, Bool, EmberKeyData],
+        [EmberStatus]
     ],
-    "eraseKeyTableEntry": [118, [t.uint8_t],
-        [t.EmberStatus]
+    "eraseKeyTableEntry": [118, [uint8_t],
+        [EmberStatus]
     ],
     "clearKeyTable": [177, [],
-        [t.EmberStatus]
+        [EmberStatus]
     ],
-    "requestLinkKey": [20, [t.EmberEUI64],
-        [t.EmberStatus]
+    "requestLinkKey": [20, [EmberEUI64],
+        [EmberStatus]
     ],
     "zigbeeKeyEstablishmentHandler": [155, [],
-        [t.EmberEUI64, t.EmberKeyStatus]
+        [EmberEUI64, EmberKeyStatus]
     ],
-    "addTransientLinkKey": [175, [t.EmberEUI64, t.EmberKeyData],
-        [t.EmberStatus]
+    "addTransientLinkKey": [175, [EmberEUI64, EmberKeyData],
+        [EmberStatus]
     ],
     "clearTransientLinkKeys": [107, [],
         []
     ],
-    "setSecurityKey": [202, [t.EmberKeyData, t.SecureEzspSecurityType],
-        [t.EzspStatus]
+    "setSecurityKey": [202, [EmberKeyData, SecureEzspSecurityType],
+        [EzspStatus]
     ],
-    "setSecurityParameters": [203, [t.SecureEzspSecurityLevel, t.SecureEzspRandomNumber],
-        [t.EzspStatus, t.SecureEzspRandomNumber]
+    "setSecurityParameters": [203, [SecureEzspSecurityLevel, SecureEzspRandomNumber],
+        [EzspStatus, SecureEzspRandomNumber]
     ],
     "resetToFactoryDefaults": [204, [],
-        [t.EzspStatus]
+        [EzspStatus]
     ],
     "getSecurityKeyStatus": [205, [],
-        [t.EzspStatus, t.SecureEzspSecurityType]
+        [EzspStatus, SecureEzspSecurityType]
     ],
     "trustCenterJoinHandler": [36, [],
-        [t.EmberNodeId, t.EmberEUI64, t.EmberDeviceUpdate, t.EmberJoinDecision, t.EmberNodeId]
+        [EmberNodeId, EmberEUI64, EmberDeviceUpdate, EmberJoinDecision, EmberNodeId]
     ],
-    "broadcastNextNetworkKey": [115, [t.EmberKeyData],
-        [t.EmberStatus]
+    "broadcastNextNetworkKey": [115, [EmberKeyData],
+        [EmberStatus]
     ],
     "broadcastNetworkKeySwitch": [116, [],
-        [t.EmberStatus]
+        [EmberStatus]
     ],
-    "becomeTrustCenter": [119, [t.EmberKeyData],
-        [t.EmberStatus]
+    "becomeTrustCenter": [119, [EmberKeyData],
+        [EmberStatus]
     ],
-    "aesMmoHash": [111, [t.EmberAesMmoHashContext, t.Bool, t.LVBytes],
-        [t.EmberStatus, t.EmberAesMmoHashContext]
+    "aesMmoHash": [111, [EmberAesMmoHashContext, Bool, LVBytes],
+        [EmberStatus, EmberAesMmoHashContext]
     ],
-    "removeDevice": [168, [t.EmberNodeId, t.EmberEUI64, t.EmberEUI64],
-        [t.EmberStatus]
+    "removeDevice": [168, [EmberNodeId, EmberEUI64, EmberEUI64],
+        [EmberStatus]
     ],
-    "unicastNwkKeyUpdate": [169, [t.EmberNodeId, t.EmberEUI64, t.EmberKeyData],
-        [t.EmberStatus]
+    "unicastNwkKeyUpdate": [169, [EmberNodeId, EmberEUI64, EmberKeyData],
+        [EmberStatus]
     ],
     "generateCbkeKeys": [164, [],
-        [t.EmberStatus]
+        [EmberStatus]
     ],
     "generateCbkeKeysHandler": [158, [],
-        [t.EmberStatus, t.EmberPublicKeyData]
+        [EmberStatus, EmberPublicKeyData]
     ],
-    "calculateSmacs": [159, [t.Bool, t.EmberCertificateData, t.EmberPublicKeyData],
-        [t.EmberStatus]
+    "calculateSmacs": [159, [Bool, EmberCertificateData, EmberPublicKeyData],
+        [EmberStatus]
     ],
     "calculateSmacsHandler": [160, [],
-        [t.EmberStatus, t.EmberSmacData, t.EmberSmacData]
+        [EmberStatus, EmberSmacData, EmberSmacData]
     ],
     "generateCbkeKeys283k1": [232, [],
-        [t.EmberStatus]
+        [EmberStatus]
     ],
     "generateCbkeKeysHandler283k1": [233, [],
-        [t.EmberStatus, t.EmberPublicKey283k1Data]
+        [EmberStatus, EmberPublicKey283k1Data]
     ],
-    "calculateSmacs283k1": [234, [t.Bool, t.EmberCertificate283k1Data, t.EmberPublicKey283k1Data],
-        [t.EmberStatus]
+    "calculateSmacs283k1": [234, [Bool, EmberCertificate283k1Data, EmberPublicKey283k1Data],
+        [EmberStatus]
     ],
     "calculateSmacsHandler283k1": [235, [],
-        [t.EmberStatus, t.EmberSmacData, t.EmberSmacData]
+        [EmberStatus, EmberSmacData, EmberSmacData]
     ],
-    "clearTemporaryDataMaybeStoreLinkKey": [161, [t.Bool],
-        [t.EmberStatus]
+    "clearTemporaryDataMaybeStoreLinkKey": [161, [Bool],
+        [EmberStatus]
     ],
-    "clearTemporaryDataMaybeStoreLinkKey283k1": [238, [t.Bool],
-        [t.EmberStatus]
+    "clearTemporaryDataMaybeStoreLinkKey283k1": [238, [Bool],
+        [EmberStatus]
     ],
     "getCertificate": [165, [],
-        [t.EmberStatus, t.EmberCertificateData]
+        [EmberStatus, EmberCertificateData]
     ],
     "getCertificate283k1": [236, [],
-        [t.EmberStatus, t.EmberCertificate283k1Data]
+        [EmberStatus, EmberCertificate283k1Data]
     ],
-    "dsaSign": [166, [t.LVBytes],
-        [t.EmberStatus]
+    "dsaSign": [166, [LVBytes],
+        [EmberStatus]
     ],
     "dsaSignHandler": [167, [],
-        [t.EmberStatus, t.LVBytes]
+        [EmberStatus, LVBytes]
     ],
-    "dsaVerify": [163, [t.EmberMessageDigest, t.EmberCertificateData, t.EmberSignatureData],
-        [t.EmberStatus]
+    "dsaVerify": [163, [EmberMessageDigest, EmberCertificateData, EmberSignatureData],
+        [EmberStatus]
     ],
     "dsaVerifyHandler": [120, [],
-        [t.EmberStatus]
+        [EmberStatus]
     ],
-    "dsaVerify283k1": [176, [t.EmberMessageDigest, t.EmberCertificate283k1Data, t.EmberSignature283k1Data],
-        [t.EmberStatus]
+    "dsaVerify283k1": [176, [EmberMessageDigest, EmberCertificate283k1Data, EmberSignature283k1Data],
+        [EmberStatus]
     ],
-    "setPreinstalledCbkeData": [162, [t.EmberPublicKeyData, t.EmberCertificateData, t.EmberPrivateKeyData],
-        [t.EmberStatus]
+    "setPreinstalledCbkeData": [162, [EmberPublicKeyData, EmberCertificateData, EmberPrivateKeyData],
+        [EmberStatus]
     ],
-    "setPreinstalledCbkeData283k1": [237, [t.EmberPublicKey283k1Data, t.EmberCertificate283k1Data, t.EmberPrivateKey283k1Data],
-        [t.EmberStatus]
+    "setPreinstalledCbkeData283k1": [237, [EmberPublicKey283k1Data, EmberCertificate283k1Data, EmberPrivateKey283k1Data],
+        [EmberStatus]
     ],
-    "mfglibStart": [131, [t.Bool],
-        [t.EmberStatus]
+    "mfglibStart": [131, [Bool],
+        [EmberStatus]
     ],
     "mfglibEnd": [132, [],
-        [t.EmberStatus]
+        [EmberStatus]
     ],
     "mfglibStartTone": [133, [],
-        [t.EmberStatus]
+        [EmberStatus]
     ],
     "mfglibStopTone": [134, [],
-        [t.EmberStatus]
+        [EmberStatus]
     ],
     "mfglibStartStream": [135, [],
-        [t.EmberStatus]
+        [EmberStatus]
     ],
     "mfglibStopStream": [136, [],
-        [t.EmberStatus]
+        [EmberStatus]
     ],
-    "mfglibSendPacket": [137, [t.LVBytes],
-        [t.EmberStatus]
+    "mfglibSendPacket": [137, [LVBytes],
+        [EmberStatus]
     ],
-    "mfglibSetChannel": [138, [t.uint8_t],
-        [t.EmberStatus]
+    "mfglibSetChannel": [138, [uint8_t],
+        [EmberStatus]
     ],
     "mfglibGetChannel": [139, [],
-        [t.uint8_t]
+        [uint8_t]
     ],
-    "mfglibSetPower": [140, [t.uint16_t, t.int8s],
-        [t.EmberStatus]
+    "mfglibSetPower": [140, [uint16_t, int8s],
+        [EmberStatus]
     ],
     "mfglibGetPower": [141, [],
-        [t.int8s]
+        [int8s]
     ],
     "mfglibRxHandler": [142, [],
-        [t.uint8_t, t.int8s, t.LVBytes]
+        [uint8_t, int8s, LVBytes]
     ],
-    "launchStandaloneBootloader": [143, [t.uint8_t],
-        [t.EmberStatus]
+    "launchStandaloneBootloader": [143, [uint8_t],
+        [EmberStatus]
     ],
-    "sendBootloadMessage": [144, [t.Bool, t.EmberEUI64, t.LVBytes],
-        [t.EmberStatus]
+    "sendBootloadMessage": [144, [Bool, EmberEUI64, LVBytes],
+        [EmberStatus]
     ],
     "getStandaloneBootloaderVersionPlatMicroPhy": [145, [],
-        [t.uint16_t, t.uint8_t, t.uint8_t, t.uint8_t]
+        [uint16_t, uint8_t, uint8_t, uint8_t]
     ],
     "incomingBootloadMessageHandler": [146, [],
-        [t.EmberEUI64, t.uint8_t, t.int8s, t.LVBytes]
+        [EmberEUI64, uint8_t, int8s, LVBytes]
     ],
     "bootloadTransmitCompleteHandler": [147, [],
-        [t.EmberStatus, t.LVBytes]
+        [EmberStatus, LVBytes]
     ],
-    "aesEncrypt": [148, [t.fixed_list(16, t.uint8_t), t.fixed_list(16, t.uint8_t)],
-        [t.fixed_list(16, t.uint8_t)]
+    "aesEncrypt": [148, [fixed_list(16, uint8_t), fixed_list(16, uint8_t)],
+        [fixed_list(16, uint8_t)]
     ],
-    "overrideCurrentChannel": [149, [t.uint8_t],
-        [t.EmberStatus]
+    "overrideCurrentChannel": [149, [uint8_t],
+        [EmberStatus]
     ],
-    "zllNetworkOps": [178, [t.EmberZllNetwork, t.EzspZllNetworkOperation, t.int8s],
-        [t.EmberStatus]
+    "zllNetworkOps": [178, [EmberZllNetwork, EzspZllNetworkOperation, int8s],
+        [EmberStatus]
     ],
-    "zllSetInitialSecurityState": [179, [t.EmberKeyData, t.EmberZllInitialSecurityState],
-        [t.EmberStatus]
+    "zllSetInitialSecurityState": [179, [EmberKeyData, EmberZllInitialSecurityState],
+        [EmberStatus]
     ],
-    "zllStartScan": [180, [t.uint32_t, t.int8s, t.EmberNodeType],
-        [t.EmberStatus]
+    "zllStartScan": [180, [uint32_t, int8s, EmberNodeType],
+        [EmberStatus]
     ],
-    "zllSetRxOnWhenIdle": [181, [t.uint16_t],
-        [t.EmberStatus]
+    "zllSetRxOnWhenIdle": [181, [uint16_t],
+        [EmberStatus]
     ],
     "zllNetworkFoundHandler": [182, [],
-        [t.EmberZllNetwork, t.Bool, t.EmberZllDeviceInfoRecord, t.uint8_t, t.int8s]
+        [EmberZllNetwork, Bool, EmberZllDeviceInfoRecord, uint8_t, int8s]
     ],
     "zllScanCompleteHandler": [183, [],
-        [t.EmberStatus]
+        [EmberStatus]
     ],
     "zllAddressAssignmentHandler": [184, [],
-        [t.EmberZllAddressAssignment, t.uint8_t, t.int8s]
+        [EmberZllAddressAssignment, uint8_t, int8s]
     ],
-    "setLogicalAndRadioChannel": [185, [t.uint8_t],
-        [t.EmberStatus]
+    "setLogicalAndRadioChannel": [185, [uint8_t],
+        [EmberStatus]
     ],
     "getLogicalChannel": [186, [],
-        [t.uint8_t]
+        [uint8_t]
     ],
     "zllTouchLinkTargetHandler": [187, [],
-        [t.EmberZllNetwork]
+        [EmberZllNetwork]
     ],
     "zllGetTokens": [188, [],
-        [t.EmberTokTypeStackZllData, t.EmberTokTypeStackZllSecurity]
+        [EmberTokTypeStackZllData, EmberTokTypeStackZllSecurity]
     ],
-    "zllSetDataToken": [189, [t.EmberTokTypeStackZllData],
+    "zllSetDataToken": [189, [EmberTokTypeStackZllData],
         []
     ],
     "zllSetNonZllNetwork": [191, [],
         []
     ],
     "isZllNetwork": [190, [],
-        [t.Bool]
+        [Bool]
     ],
-    "rf4ceSetPairingTableEntry": [208, [t.uint8_t, t.EmberRf4cePairingTableEntry],
-        [t.EmberStatus]
+    "rf4ceSetPairingTableEntry": [208, [uint8_t, EmberRf4cePairingTableEntry],
+        [EmberStatus]
     ],
-    "rf4ceGetPairingTableEntry": [209, [t.uint8_t],
-        [t.EmberStatus, t.EmberRf4cePairingTableEntry]
+    "rf4ceGetPairingTableEntry": [209, [uint8_t],
+        [EmberStatus, EmberRf4cePairingTableEntry]
     ],
-    "rf4ceDeletePairingTableEntry": [210, [t.uint8_t],
-        [t.EmberStatus]
+    "rf4ceDeletePairingTableEntry": [210, [uint8_t],
+        [EmberStatus]
     ],
-    "rf4ceKeyUpdate": [211, [t.uint8_t, t.EmberKeyData],
-        [t.EmberStatus]
+    "rf4ceKeyUpdate": [211, [uint8_t, EmberKeyData],
+        [EmberStatus]
     ],
-    "rf4ceSend": [212, [t.uint8_t, t.uint8_t, t.uint16_t, t.EmberRf4ceTxOption, t.uint8_t, t.LVBytes],
-        [t.EmberStatus]
+    "rf4ceSend": [212, [uint8_t, uint8_t, uint16_t, EmberRf4ceTxOption, uint8_t, LVBytes],
+        [EmberStatus]
     ],
     "rf4ceIncomingMessageHandler": [213, [],
-        [t.uint8_t, t.uint8_t, t.uint16_t, t.EmberRf4ceTxOption, t.LVBytes]
+        [uint8_t, uint8_t, uint16_t, EmberRf4ceTxOption, LVBytes]
     ],
     "rf4ceMessageSentHandler": [214, [],
-        [t.EmberStatus, t.uint8_t, t.EmberRf4ceTxOption, t.uint8_t, t.uint16_t, t.uint8_t, t.LVBytes]
+        [EmberStatus, uint8_t, EmberRf4ceTxOption, uint8_t, uint16_t, uint8_t, LVBytes]
     ],
-    "rf4ceStart": [215, [t.EmberRf4ceNodeCapabilities, t.EmberRf4ceVendorInfo, t.int8s],
-        [t.EmberStatus]
+    "rf4ceStart": [215, [EmberRf4ceNodeCapabilities, EmberRf4ceVendorInfo, int8s],
+        [EmberStatus]
     ],
     "rf4ceStop": [216, [],
-        [t.EmberStatus]
+        [EmberStatus]
     ],
-    "rf4ceDiscovery": [217, [t.EmberPanId, t.EmberNodeId, t.uint8_t, t.uint16_t, t.LVBytes],
-        [t.EmberStatus]
+    "rf4ceDiscovery": [217, [EmberPanId, EmberNodeId, uint8_t, uint16_t, LVBytes],
+        [EmberStatus]
     ],
     "rf4ceDiscoveryCompleteHandler": [218, [],
-        [t.EmberStatus]
+        [EmberStatus]
     ],
     "rf4ceDiscoveryRequestHandler": [219, [],
-        [t.EmberEUI64, t.uint8_t, t.EmberRf4ceVendorInfo, t.EmberRf4ceApplicationInfo, t.uint8_t, t.uint8_t]
+        [EmberEUI64, uint8_t, EmberRf4ceVendorInfo, EmberRf4ceApplicationInfo, uint8_t, uint8_t]
     ],
     "rf4ceDiscoveryResponseHandler": [220, [],
-        [t.Bool, t.uint8_t, t.EmberPanId, t.EmberEUI64, t.uint8_t, t.EmberRf4ceVendorInfo, t.EmberRf4ceApplicationInfo, t.uint8_t, t.uint8_t]
+        [Bool, uint8_t, EmberPanId, EmberEUI64, uint8_t, EmberRf4ceVendorInfo, EmberRf4ceApplicationInfo, uint8_t, uint8_t]
     ],
-    "rf4ceEnableAutoDiscoveryResponse": [221, [t.uint16_t],
-        [t.EmberStatus]
+    "rf4ceEnableAutoDiscoveryResponse": [221, [uint16_t],
+        [EmberStatus]
     ],
     "rf4ceAutoDiscoveryResponseCompleteHandler": [222, [],
-        [t.EmberStatus, t.EmberEUI64, t.uint8_t, t.EmberRf4ceVendorInfo, t.EmberRf4ceApplicationInfo, t.uint8_t]
+        [EmberStatus, EmberEUI64, uint8_t, EmberRf4ceVendorInfo, EmberRf4ceApplicationInfo, uint8_t]
     ],
-    "rf4cePair": [223, [t.uint8_t, t.EmberPanId, t.EmberEUI64, t.uint8_t],
-        [t.EmberStatus]
+    "rf4cePair": [223, [uint8_t, EmberPanId, EmberEUI64, uint8_t],
+        [EmberStatus]
     ],
     "rf4cePairCompleteHandler": [224, [],
-        [t.EmberStatus, t.uint8_t, t.EmberRf4ceVendorInfo, t.EmberRf4ceApplicationInfo]
+        [EmberStatus, uint8_t, EmberRf4ceVendorInfo, EmberRf4ceApplicationInfo]
     ],
     "rf4cePairRequestHandler": [225, [],
-        [t.EmberStatus, t.uint8_t, t.EmberEUI64, t.uint8_t, t.EmberRf4ceVendorInfo, t.EmberRf4ceApplicationInfo, t.uint8_t]
+        [EmberStatus, uint8_t, EmberEUI64, uint8_t, EmberRf4ceVendorInfo, EmberRf4ceApplicationInfo, uint8_t]
     ],
-    "rf4ceUnpair": [226, [t.uint8_t],
-        [t.EmberStatus]
+    "rf4ceUnpair": [226, [uint8_t],
+        [EmberStatus]
     ],
     "rf4ceUnpairHandler": [227, [],
-        [t.uint8_t]
+        [uint8_t]
     ],
     "rf4ceUnpairCompleteHandler": [228, [],
-        [t.uint8_t]
+        [uint8_t]
     ],
-    "rf4ceSetPowerSavingParameters": [229, [t.uint32_t, t.uint32_t],
-        [t.EmberStatus]
+    "rf4ceSetPowerSavingParameters": [229, [uint32_t, uint32_t],
+        [EmberStatus]
     ],
-    "rf4ceSetFrequencyAgilityParameters": [230, [t.uint8_t, t.uint8_t, t.int8s, t.uint16_t, t.uint8_t],
-        [t.EmberStatus]
+    "rf4ceSetFrequencyAgilityParameters": [230, [uint8_t, uint8_t, int8s, uint16_t, uint8_t],
+        [EmberStatus]
     ],
-    "rf4ceSetApplicationInfo": [231, [t.EmberRf4ceApplicationInfo],
-        [t.EmberStatus]
+    "rf4ceSetApplicationInfo": [231, [EmberRf4ceApplicationInfo],
+        [EmberStatus]
     ],
     "rf4ceGetApplicationInfo": [239, [],
-        [t.EmberStatus, t.EmberRf4ceApplicationInfo]
+        [EmberStatus, EmberRf4ceApplicationInfo]
     ],
-    "rf4ceGetMaxPayload": [243, [t.uint8_t, t.EmberRf4ceTxOption],
-        [t.uint8_t]
+    "rf4ceGetMaxPayload": [243, [uint8_t, EmberRf4ceTxOption],
+        [uint8_t]
     ],
     "rf4ceGetNetworkParameters": [244, [],
-        [t.EmberStatus, t.EmberNodeType, t.EmberNetworkParameters]
+        [EmberStatus, EmberNodeType, EmberNetworkParameters]
     ],
-    "gpProxyTableProcessGpPairing": [201, [t.uint32_t, t.EmberGpAddress, t.uint8_t, t.uint16_t, t.uint16_t, t.uint16_t, t.fixed_list(8, t.uint8_t), t.EmberKeyData],
+    "gpProxyTableProcessGpPairing": [201, [uint32_t, EmberGpAddress, uint8_t, uint16_t, uint16_t, uint16_t, fixed_list(8, uint8_t), EmberKeyData],
         []
     ],
-    "dGpSend": [198, [t.Bool, t.Bool, t.EmberGpAddress, t.uint8_t, t.LVBytes, t.uint8_t, t.uint16_t],
-        [t.EmberStatus]
+    "dGpSend": [198, [Bool, Bool, EmberGpAddress, uint8_t, LVBytes, uint8_t, uint16_t],
+        [EmberStatus]
     ],
     "dGpSentHandler": [199, [],
-        [t.EmberStatus, t.uint8_t]
+        [EmberStatus, uint8_t]
     ],
     "gpepIncomingMessageHandler": [197, [],
-        [t.EmberStatus, t.uint8_t, t.uint8_t, t.EmberGpAddress, t.EmberGpSecurityLevel, t.EmberGpKeyType, t.Bool, t.Bool, t.uint32_t, t.uint8_t, t.uint32_t, t.EmberGpSinkListEntry, t.LVBytes]
+        [EmberStatus, uint8_t, uint8_t, EmberGpAddress, EmberGpSecurityLevel, EmberGpKeyType, Bool, Bool, uint32_t, uint8_t, uint32_t, EmberGpSinkListEntry, LVBytes]
     ]
 };
 

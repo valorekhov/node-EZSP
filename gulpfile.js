@@ -14,11 +14,11 @@ gulp.task('ts-compile', function () {
                        .pipe(tsProject());
     return tsResult
             .pipe(sourcemaps.write())
-            .pipe(gulp.dest('build'));
+            .pipe(gulp.dest('lib'));
 })
 
 gulp.task('clean', function(cb) {
-    del(['build', 'typings'], cb);
+    del(['lib', 'typings'], cb);
 });
 
 gulp.task('default', function() {

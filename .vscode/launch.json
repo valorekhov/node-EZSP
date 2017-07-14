@@ -9,7 +9,7 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceRoot}/build/test.js",
+            "program": "${workspaceRoot}/lib/test.js",
             "preLaunchTask": "default",
             "outFiles": [
                 "${workspaceRoot}/out/**/*.js"

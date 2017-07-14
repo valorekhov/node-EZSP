@@ -1,4 +1,5 @@
 import * as basic from './basic';
+import { fixed_list } from './basic';
 
 console.assert(basic.uint8_t);
 
@@ -27,7 +28,7 @@ export class EmberPanId extends basic.uint16_t {
 }
 export class EmberMulticastId extends basic.uint16_t {
 }
-export class EmberEUI64 extends basic.fixed_list(8, basic.uint8_t) {
+export class EmberEUI64 extends fixed_list(8, basic.uint8_t) {
     static deserialize(cls : any, data : Buffer) {
         var r;
         var arr = super.deserialize(cls, data);

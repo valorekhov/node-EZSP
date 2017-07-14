@@ -7,7 +7,7 @@ import {
     uint32_t,
     uint64_t,
     LVBytes,
-    List,
+    list,
     LVList,
     fixed_list
 } from './basic';
@@ -57,7 +57,7 @@ export {
     uint32_t,
     uint64_t,
     LVBytes,
-    List,
+    list,
     LVList,
     fixed_list,
 

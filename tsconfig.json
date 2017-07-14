@@ -1,8 +1,9 @@
 {
     "compilerOptions": {
-        "outDir": "./build/",
+        "outDir": "./lib/",
         "target": "ES6",
         "module": "commonjs",
+        "declaration": true,
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
