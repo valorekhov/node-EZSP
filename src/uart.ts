@@ -34,7 +34,7 @@ export class UartProtocol implements AsyncIterable<Buffer> {
     _send_seq = 0;
     _rec_seq = 0;
     _buffer: Buffer | undefined = Buffer.alloc(256);
-    _reset_deferred: Deferred<void>;
+    _reset_deferred: Deferred<any>;
     _pending: any;
     _sendq: AsyncQueue<{ data: Buffer, seq: number }>
     _connected_future: Function | undefined

@@ -1,27 +1,28 @@
 {
   "name": "node-ezsp",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "EZSP library for Node.js",
-  "main": "build/index.js",
+  "main": "lib/index.js",
+  "typings": "lib/index",
   "scripts": {
     "build": "gulp",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/no2chem/node-EZSP.git"
+    "url": "https://github.com/valorekhov/node-EZSP.git"
   },
   "keywords": [
     "EZSP",
     "zigbee",
     "silabs"
   ],
-  "author": "Michael Wei <mwei@cs.ucsd.edu>",
+  "author": "Val Orekhov",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/no2chem/node-EZSP/issues"
+    "url": "https://github.com/valorekhov/node-EZSP/issues"
   },
-  "homepage": "https://github.com/no2chem/node-EZSP",
+  "homepage": "https://github.com/valorekhov/node-EZSP",
   "devDependencies": {
     "@types/bunyan": "^1.8.0",
     "@types/crc": "^3.4.0",
@@ -30,12 +31,11 @@
     "gulp": "^3.9.1",
     "gulp-sourcemaps": "^1.2.8",
     "gulp-typescript": "^3.1.7",
-    "serialport": "^4.0.7",
     "typescript": "^2.4.0"
   },
   "dependencies": {
     "bunyan": "^1.8.10",
-    "crc": "^3.2.1",
-    "data-structures": "^1.4.2"
+    "serialport": "^4.0.7",
+    "crc": "^3.2.1"
   }
 }

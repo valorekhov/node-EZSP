@@ -3,14 +3,38 @@
 export class Deferred<T> {
 
     public promise: Promise<T>;
-    public resolve: Function;
-    public reject: Function;
+    public _resolve: Function;
+    public _reject: Function;
+    _isResolved = false;
+    _isRejected = false;
 
     constructor() {
         this.promise = new Promise((resolve, reject) => {
-            this.resolve = resolve
-            this.reject = reject
+            this._resolve = resolve
+            this._reject = reject
         })
+    }
+
+    public resolve(value:T){
+        this._isResolved = true;
+        this._resolve(value);
+    }
+
+     public reject(value:T){
+        this._isResolved = true;
+        this.reject(value);
+    }
+
+    get isResolved(){
+        return this._isResolved;
+    }
+
+    get isRejected(){
+        return this._isRejected;
+    }
+
+    get isFullfilled(){
+        return this._isResolved || this._isRejected;
     }
 }
 
