@@ -160,8 +160,8 @@ export function fixed_list(length: number, itemtype: any) : {
     deserialize(cls : any, data : Buffer) : any;
 } {
     class FixedList extends _FixedList  {
-        static _itemtype: any;
-        static _length: number;
+        static _itemtype = itemtype;
+        static _length = length;
     }
     return FixedList;
 }
