@@ -15,6 +15,7 @@ application.startup('/dev/ttyUSB1', {
   xon: true,
   xoff: true
 }).then(async () => {
+  //console.log((new EmberEUI64('000d6f000b12e50b').toString()))
   
   let localEui64 = await application.getLocalEUI64();
   console.log('Local Eui64:', localEui64.toString());
