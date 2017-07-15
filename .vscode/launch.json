@@ -12,7 +12,7 @@
             "program": "${workspaceRoot}/lib/test.js",
             "preLaunchTask": "default",
             "outFiles": [
-                "${workspaceRoot}/out/**/*.js"
+                "${workspaceRoot}/lib/**/*.js"
             ]
         }
     ]

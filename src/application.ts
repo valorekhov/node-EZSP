@@ -176,7 +176,6 @@ export class ControllerApplication extends EventEmitter {
     }
 
     public getLocalEUI64(): Promise<EmberEUI64> {
-        debugger;
         return this.ezsp.execCommand('getEui64')
             .then(ret => new EmberEUI64(ret[0] as any));
     }
