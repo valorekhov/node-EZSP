@@ -11,6 +11,7 @@ export class ControllerApplication extends EventEmitter {
     private ezsp: Ezsp;
     private eui64ToNodeId = new Map<string, number>();
     private pending = new Map<number, Array<Deferred<any>>>();
+    private addressQueue: Array<EmberEUI64> = [];
 
     public async startup(port: string, options: {}) {
         let ezsp = this.ezsp = new Ezsp();
@@ -38,9 +39,13 @@ export class ControllerApplication extends EventEmitter {
 
     private handleFrame(frameName: string, ...args: any[]) {
 
-        if (frameName === 'incomingMessageHandler') {
+        if (frameName === 'incomingSenderEui64Handler') {
+            this.addressQueue.push(new EmberEUI64(args[0]));
+        } else if (frameName === 'incomingMessageHandler') {
             let [messageType, apsFrame, lqi, rssi, sender, bindingIndex, addressIndex, message] = args;
-            super.emit('incomingMessage', { messageType, apsFrame, lqi, rssi, sender, bindingIndex, addressIndex, message });
+            super.emit('incomingMessage', { messageType, apsFrame, lqi, rssi, sender, bindingIndex, addressIndex, message,
+                senderEui64: this.addressQueue.shift()
+             });
 
             let isReply = false;
             let tsn = -1;
@@ -49,7 +54,6 @@ export class ControllerApplication extends EventEmitter {
                 this.handleReply(sender, apsFrame, tsn, commandId, args);
             }
         } else if (frameName === 'messageSentHandler') {
-            debugger;
             if (args[4] != 0) {
                 this.handleFrameFailure.apply(this, args);
             } else {
@@ -121,7 +125,6 @@ export class ControllerApplication extends EventEmitter {
             }
 
             await sendDeferred.promise;
-            debugger;
             if (timeout > 0) {
                 await replyDeferred.promise;
             } else {
@@ -178,5 +181,19 @@ export class ControllerApplication extends EventEmitter {
     public getLocalEUI64(): Promise<EmberEUI64> {
         return this.ezsp.execCommand('getEui64')
             .then(ret => new EmberEUI64(ret[0] as any));
+    }
+
+    public async networkIdToEUI64(nwk: number): Promise<EmberEUI64> {
+        for (let [eUI64, value] of this.eui64ToNodeId) {
+            if (value === nwk) return new EmberEUI64(eUI64);
+        }
+        let value = await this.ezsp.execCommand('lookupEui64ByNodeId', nwk);
+        if (value[0] === 0) {
+            let eUI64 = new EmberEUI64(value[1] as any);
+            this.eui64ToNodeId.set(eUI64.toString(), nwk);
+            return eUI64;
+        } else {
+            throw new Error('Unrecognized nodeId:' + nwk)
+        }
     }
 }

@@ -1,11 +1,11 @@
 import { ControllerApplication } from './application';
 import { EmberApsFrame } from './types/struct';
-import { EmberApsOption } from './types/named';
+import { EmberApsOption, EmberEUI64 } from './types/named';
 
 const application = new ControllerApplication();
 
-application.on('incomingMessage', ({ apsFrame, sender, message }: { apsFrame: EmberApsFrame, sender: number, message: Buffer }) => {
-  console.log('incomingMessage', sender, apsFrame, message);
+application.on('incomingMessage', ({ apsFrame, sender, senderEui64,  message }: { apsFrame: EmberApsFrame, sender: number, senderEui64: EmberEUI64,  message: Buffer }) => {
+  console.log('incomingMessage', sender, senderEui64 && senderEui64.toString(), apsFrame, message);
 });
 
 application.startup('/dev/ttyUSB1', {
@@ -15,11 +15,10 @@ application.startup('/dev/ttyUSB1', {
   xon: true,
   xoff: true
 }).then(async () => {
-  //console.log((new EmberEUI64('000d6f000b12e50b').toString()))
-  
+
   let localEui64 = await application.getLocalEUI64();
   console.log('Local Eui64:', localEui64.toString());
-  
+
   var res = await application.request(0xA329, {
     clusterId: 0x11, profileId: 0xC105,
     sequence: 1,
@@ -28,6 +27,8 @@ application.startup('/dev/ttyUSB1', {
   }, Buffer.from('\nTESTING!\n'), 0);
 
   console.log('Sent=', res);
+
+   console.log('nodeID:', (await application.networkIdToEUI64(41769)).toString()); 
 });
 
 
