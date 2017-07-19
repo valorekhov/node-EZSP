@@ -3,7 +3,7 @@ import { EzspConfigId, EmberZdoConfigurationFlags } from './types';
 import { EventEmitter } from "events";
 import { EmberApsFrame } from './types/struct';
 import { Deferred } from './utils/index';
-import { EmberOutgoingMessageType, EmberEUI64 } from './types/named';
+import { EmberOutgoingMessageType, EmberEUI64, EmberDeviceUpdate } from './types/named';
 
 
 export class ControllerApplication extends EventEmitter {
@@ -12,6 +12,17 @@ export class ControllerApplication extends EventEmitter {
     private eui64ToNodeId = new Map<string, number>();
     private pending = new Map<number, Array<Deferred<any>>>();
     private addressQueue: Array<EmberEUI64> = [];
+
+    constructor(nodeInfo?:Iterable<{nodeId:number, eui64: string | EmberEUI64}>){
+        super();
+
+        if (!nodeInfo) return;
+
+        for(let node of nodeInfo){
+            let eui64 = node.eui64 instanceof EmberEUI64 ? node.eui64 : new EmberEUI64(node.eui64);
+            this.eui64ToNodeId.set(eui64.toString(), node.nodeId);
+        }
+    }
 
     public async startup(port: string, options: {}) {
         let ezsp = this.ezsp = new Ezsp();
@@ -43,9 +54,10 @@ export class ControllerApplication extends EventEmitter {
             this.addressQueue.push(new EmberEUI64(args[0]));
         } else if (frameName === 'incomingMessageHandler') {
             let [messageType, apsFrame, lqi, rssi, sender, bindingIndex, addressIndex, message] = args;
-            super.emit('incomingMessage', { messageType, apsFrame, lqi, rssi, sender, bindingIndex, addressIndex, message,
+            super.emit('incomingMessage', {
+                messageType, apsFrame, lqi, rssi, sender, bindingIndex, addressIndex, message,
                 senderEui64: this.addressQueue.shift()
-             });
+            });
 
             let isReply = false;
             let tsn = -1;
@@ -59,8 +71,30 @@ export class ControllerApplication extends EventEmitter {
             } else {
                 this.handleFrameSent.apply(this, args);
             }
+        } else if (frameName === 'trustCenterJoinHandler') {
+            if (args[2] === EmberDeviceUpdate.DEVICE_LEFT) {
+                this.handleNodeLeft.apply(this, args);
+            } else {
+                this.handleNodeJoined.apply(this, args);
+            }
         }
 
+    }
+
+    private handleNodeLeft(nwk: number, ieee: EmberEUI64 | number[], ...args: any[]) {
+        if (ieee && !(ieee instanceof EmberEUI64)) {
+            ieee = new EmberEUI64(ieee);
+        }
+        this.eui64ToNodeId.delete(ieee.toString());
+        this.emit('deviceLeft', [nwk, ieee])
+    }
+
+    private handleNodeJoined(nwk: number, ieee: EmberEUI64 | number[], deviceUpdate: any, joinDec: any, parentNwk: any) {
+        if (ieee && !(ieee instanceof EmberEUI64)) {
+            ieee = new EmberEUI64(ieee);
+        }
+        this.eui64ToNodeId.set(ieee.toString(), nwk);
+        this.emit('deviceJoined', [nwk, ieee])
     }
 
     private handleReply(sender: number, apsFrame: EmberApsFrame, tsn: number, commandId: number, ...args: any[]) {
@@ -106,7 +140,7 @@ export class ControllerApplication extends EventEmitter {
                 let nodeId = this.eui64ToNodeId.get(strEui64);
                 if (nodeId === undefined) {
                     nodeId = await this.ezsp.execCommand('lookupNodeIdByEui64', eui64).then(arr => arr[0]);
-                    if (nodeId) {
+                    if (nodeId && nodeId !== 0xFFFF) {
                         this.eui64ToNodeId.set(strEui64, nodeId);
                     } else {
                         throw new Error('Unknown EUI64:' + strEui64);
