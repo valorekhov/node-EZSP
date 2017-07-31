@@ -1,6 +1,6 @@
 {
   "name": "node-ezsp",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "EZSP library for Node.js",
   "main": "lib/index.js",
   "typings": "lib/index",
