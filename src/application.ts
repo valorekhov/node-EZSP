@@ -230,4 +230,8 @@ export class ControllerApplication extends EventEmitter {
             throw new Error('Unrecognized nodeId:' + nwk)
         }
     }
+
+    public permitJoining(seconds:number){
+        return this.ezsp.execCommand('permitJoining', seconds);
+    }
 }
