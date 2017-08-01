@@ -3,7 +3,7 @@ import { EzspConfigId, EmberZdoConfigurationFlags } from './types';
 import { EventEmitter } from "events";
 import { EmberApsFrame, EmberNetworkParameters } from './types/struct';
 import { Deferred } from './utils/index';
-import { EmberOutgoingMessageType, EmberEUI64, EmberDeviceUpdate, EmberNodeType } from './types/named';
+import { EmberOutgoingMessageType, EmberEUI64, EmberDeviceUpdate } from './types/named';
 
 
 export class ControllerApplication extends EventEmitter {
