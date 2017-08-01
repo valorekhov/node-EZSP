@@ -29,6 +29,9 @@ application.startup('/dev/ttyUSB1', {
   console.log('Sent=', res);
 
    console.log('nodeID:', (await application.networkIdToEUI64(41769)).toString()); 
+
+  var nwkParams = await application.getNetworkParameters();
+  console.log(nwkParams);
 });
 
 

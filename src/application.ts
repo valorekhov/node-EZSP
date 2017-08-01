@@ -1,9 +1,9 @@
 import { Ezsp } from './ezsp';
 import { EzspConfigId, EmberZdoConfigurationFlags } from './types';
 import { EventEmitter } from "events";
-import { EmberApsFrame } from './types/struct';
+import { EmberApsFrame, EmberNetworkParameters } from './types/struct';
 import { Deferred } from './utils/index';
-import { EmberOutgoingMessageType, EmberEUI64, EmberDeviceUpdate } from './types/named';
+import { EmberOutgoingMessageType, EmberEUI64, EmberDeviceUpdate, EmberNodeType } from './types/named';
 
 
 export class ControllerApplication extends EventEmitter {
@@ -233,5 +233,12 @@ export class ControllerApplication extends EventEmitter {
 
     public permitJoining(seconds:number){
         return this.ezsp.execCommand('permitJoining', seconds);
+    }
+
+    public async getNetworkParameters() : Promise<{nodeType: number, networkParams: EmberNetworkParameters}> {
+        let [status, nodeType, networkParams] = await this.ezsp.execCommand('getNetworkParameters');
+        if (status != 0)
+            throw new Error('Unable to obtain network parameters');
+        return {nodeType, networkParams}
     }
 }
