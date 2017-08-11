@@ -11,7 +11,6 @@ export class ControllerApplication extends EventEmitter {
     private ezsp: Ezsp;
     private eui64ToNodeId = new Map<string, number>();
     private pending = new Map<number, Array<Deferred<any>>>();
-    private addressQueue: Array<EmberEUI64> = [];
 
     constructor(nodeInfo?:Iterable<{nodeId:number, eui64: string | EmberEUI64}>){
         super();
@@ -50,13 +49,18 @@ export class ControllerApplication extends EventEmitter {
 
     private handleFrame(frameName: string, ...args: any[]) {
 
-        if (frameName === 'incomingSenderEui64Handler') {
-            this.addressQueue.push(new EmberEUI64(args[0]));
-        } else if (frameName === 'incomingMessageHandler') {
+        if (frameName === 'incomingMessageHandler') {
             let [messageType, apsFrame, lqi, rssi, sender, bindingIndex, addressIndex, message] = args;
+            let eui64;
+            for(let [k,v] of this.eui64ToNodeId){
+                if (v === sender){
+                    eui64 = k;
+                    break;
+                }
+            }
             super.emit('incomingMessage', {
                 messageType, apsFrame, lqi, rssi, sender, bindingIndex, addressIndex, message,
-                senderEui64: this.addressQueue.shift()
+                senderEui64: eui64
             });
 
             let isReply = false;
