@@ -1,3 +1,5 @@
+# Migrated to GitLab: https://gitlab.com/valorekhov/node-EZSP
+
 # node-EZSP
 
 Partial Port of the Bellows EZSP implemenation to support the node-ezsp-mqtt gateway project.
